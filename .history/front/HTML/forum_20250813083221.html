@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fórum - Micro Mídia</title>
+    <link rel="stylesheet" href="../CSS/forum.css">
+    <style>
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .post-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .post-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-like, .btn-comment {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-like:hover, .btn-comment:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .btn-like.liked {
+            background-color: #ffe6e6;
+            border-color: #e74c3c;
+        }
+        
+        .comments-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .comment-date {
+            color: #666;
+            font-size: 0.8em;
+        }
+        
+        .comment-form {
+            margin-top: 10px;
+        }
+        
+        .comment-form textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        
+        .comment-form button {
+            margin-top: 5px;
+        }
+        
+        .no-comments {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    
+    <header>
+        <div class="logo">
+            <img src="../assets/Logo.png" alt="Micro Mídia">
+        </div>
+        <div class="user-info">
+            <span class="user-name"></span>
+        </div>
+    </header>
+
+    
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Categorias</h3>
+            <ul>
+                <li><a href="#" onclick="carregarPostagens()">Todas</a></li>
+                <li><a href="#">Dúvidas</a></li>
+                <li><a href="#">Dicas</a></li>
+                <li><a href="#">Networking</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <h2>Fórum de Discussões</h2>
+            <p>Carregando postagens...</p>
+        </main>
+    </div>
+
+    <script src="../JS/forum.js"></script>
+</body>
+</html>

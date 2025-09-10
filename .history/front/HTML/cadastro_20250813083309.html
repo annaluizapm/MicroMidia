@@ -1,0 +1,39 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Micro Mídia</title>
+    <link rel="stylesheet" href="../CSS/logincadastro.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <img src="../assets/Logo.png" alt="Micro Mídia">
+        </div>
+        <div class="right">
+            <div class="login-box">
+                <h2>Criar conta</h2>
+                <form onsubmit="cadastrarUsuario(event)">
+                    <label for="cadastro-nome">Nome</label>
+                    <input type="text" id="cadastro-nome" name="nome" required>
+
+                    <label for="cadastro-email">Email</label>
+                    <input type="email" id="cadastro-email" name="email" required>
+
+                    <label for="cadastro-senha">Senha</label>
+                    <input type="password" id="cadastro-senha" name="senha" required>
+
+                    <label for="cadastro-bio">Biografia (opcional)</label>
+                    <textarea id="cadastro-bio" name="bio" placeholder="Conte um pouco sobre você..."></textarea>
+
+                    <button type="submit" class="btn-primary">Cadastre-se</button>
+                    <button type="button" class="btn-secondary" onclick="window.location.href='login.html'">Fazer login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../JS/script.js"></script>
+</body>
+</html>

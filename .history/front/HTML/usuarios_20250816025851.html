@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - Micro Mídia</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .usuarios-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .usuarios-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            padding: 20px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .usuarios-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #D90429, #ff6b8a);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3);
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            margin-top: 3px;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            max-width: 400px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #D90429;
+            box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.1);
+        }
+        
+        .usuarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding-bottom: 20px;
+        }
+        .usuarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding-bottom: 20px;
+        }
+        
+        .usuario-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .usuario-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border-color: #D90429;
+        }
+        
+        .usuario-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .usuario-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #D90429, #ff6b8a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .usuario-info h3 {
+            margin: 0 0 3px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .usuario-email {
+            color: #666;
+            font-size: 12px;
+            word-break: break-word;
+        }
+        
+        .usuario-bio {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            min-height: 40px;
+        }
+        
+        .usuario-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .usuario-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-perfil {
+            flex: 1;
+            background: linear-gradient(135deg, #D90429 0%, #ff6b8a 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-perfil:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(217, 4, 41, 0.3);
+        }
+        
+        .btn-postagens {
+            flex: 1;
+            background: white;
+            color: #D90429;
+            border: 2px solid #D90429;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-postagens:hover {
+            background: #D90429;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .voltar-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .voltar-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .usuario-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .filtro-container {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .filtro-input {
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            width: 300px;
+            max-width: 100%;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .filtro-input:focus {
+            outline: none;
+            border-color: #D90429;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .usuarios-container {
+                margin: 10px;
+                padding: 15px;
+                height: calc(100vh - 120px);
+            }
+            
+            .usuarios-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .usuarios-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 10px 15px;
+                min-width: auto;
+            }
+            
+            .stat-number {
+                font-size: 18px;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+        
+        .voltar-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+            z-index: 1000;
+            font-size: 14px;
+        }
+            border-color: #D90429;
+            box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <a href="forum.html" class="voltar-btn">← Voltar ao Fórum</a>
+    
+    <div class="usuarios-container">
+        <div class="usuarios-header">
+            <h1>👥 Comunidade</h1>
+            <p>Conheça todos os membros do nosso fórum</p>
+        </div>
+        
+        <div class="usuarios-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-usuarios">0</div>
+                <div class="stat-label">Usuários</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-postagens-geral">0</div>
+                <div class="stat-label">Postagens</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="usuarios-ativos">0</div>
+                <div class="stat-label">Usuários Ativos</div>
+            </div>
+        </div>
+        
+        <div class="filtro-container">
+            <input 
+                type="text" 
+                id="filtro-usuarios" 
+                class="filtro-input" 
+                placeholder="🔍 Buscar usuários por nome..."
+                autocomplete="off"
+            >
+        </div>
+        
+        <div id="usuarios-grid" class="usuarios-grid">
+            <div class="loading">
+                <h3>Carregando usuários...</h3>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../JS/script.js"></script>
+    <script>
+        let todosUsuarios = [];
+        let todasPostagens = [];
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarDados();
+            configurarFiltro();
+        });
+        
+        // Carregar todos os dados
+        async function carregarDados() {
+            try {
+                // Carregar usuários e postagens em paralelo
+                const [usuariosRes, postagensRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/usuarios`),
+                    fetch(`${API_BASE_URL}/postagens`)
+                ]);
+                
+                if (usuariosRes.ok) todosUsuarios = await usuariosRes.json();
+                if (postagensRes.ok) todasPostagens = await postagensRes.json();
+                
+                calcularEstatisticas();
+                exibirUsuarios(todosUsuarios);
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                document.getElementById('usuarios-grid').innerHTML = 
+                    '<div class="loading"><h3>❌ Erro ao carregar usuários</h3></div>';
+            }
+        }
+        
+        // Calcular estatísticas gerais
+        function calcularEstatisticas() {
+            const totalUsuarios = todosUsuarios.length;
+            const totalPostagens = todasPostagens.length;
+            const usuariosComPostagem = new Set(todasPostagens.map(p => p.usuario_id)).size;
+            
+            document.getElementById('total-usuarios').textContent = totalUsuarios;
+            document.getElementById('total-postagens-geral').textContent = totalPostagens;
+            document.getElementById('usuarios-ativos').textContent = usuariosComPostagem;
+        }
+        
+        // Exibir usuários
+        function exibirUsuarios(usuarios) {
+            const grid = document.getElementById('usuarios-grid');
+            
+            if (usuarios.length === 0) {
+                grid.innerHTML = '<div class="loading"><h3>👤 Nenhum usuário encontrado</h3></div>';
+                return;
+            }
+            
+            const usuariosComStats = usuarios.map(usuario => {
+                const postagensUsuario = todasPostagens.filter(p => p.usuario_id === usuario.id);
+                const totalPostagens = postagensUsuario.length;
+                const totalCurtidas = postagensUsuario.reduce((sum, p) => sum + (p.curtidas || 0), 0);
+                
+                return {
+                    ...usuario,
+                    totalPostagens,
+                    totalCurtidas,
+                    ultimaAtividade: postagensUsuario.length > 0 ? 
+                        Math.max(...postagensUsuario.map(p => new Date(p.criado_em).getTime())) : 
+                        new Date(usuario.criado_em).getTime()
+                };
+            });
+            
+            // Ordenar por atividade (mais ativo primeiro)
+            usuariosComStats.sort((a, b) => b.ultimaAtividade - a.ultimaAtividade);
+            
+            grid.innerHTML = usuariosComStats.map(usuario => {
+                const inicial = usuario.nome ? usuario.nome.charAt(0).toUpperCase() : '?';
+                const isAtivo = usuario.totalPostagens > 0;
+                
+                return `
+                    <div class="usuario-card">
+                        ${isAtivo ? '<div class="usuario-badge">Ativo</div>' : ''}
+                        
+                        <div class="usuario-header">
+                            <div class="usuario-avatar">${inicial}</div>
+                            <div class="usuario-info">
+                                <h3>${usuario.nome}</h3>
+                                <div class="usuario-email">${usuario.email}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="usuario-bio">
+                            ${usuario.bio || 'Este usuário ainda não adicionou uma biografia.'}
+                        </div>
+                        
+                        <div class="usuario-stats">
+                            <span>📝 ${usuario.totalPostagens} postagens</span>
+                            <span>❤️ ${usuario.totalCurtidas} curtidas</span>
+                            <span>📅 ${new Date(usuario.criado_em).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <div class="usuario-actions">
+                            <button class="btn-perfil" onclick="verPerfilUsuario(${usuario.id})">
+                                Ver Perfil
+                            </button>
+                            <button class="btn-postagens" onclick="verPostagensUsuario(${usuario.id})">
+                                Postagens
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Configurar filtro de busca
+        function configurarFiltro() {
+            const filtroInput = document.getElementById('filtro-usuarios');
+            let timeoutFiltro;
+            
+            filtroInput.addEventListener('input', () => {
+                clearTimeout(timeoutFiltro);
+                timeoutFiltro = setTimeout(() => {
+                    const termo = filtroInput.value.toLowerCase().trim();
+                    
+                    if (termo === '') {
+                        exibirUsuarios(todosUsuarios);
+                    } else {
+                        const usuariosFiltrados = todosUsuarios.filter(usuario =>
+                            usuario.nome.toLowerCase().includes(termo) ||
+                            usuario.email.toLowerCase().includes(termo) ||
+                            (usuario.bio && usuario.bio.toLowerCase().includes(termo))
+                        );
+                        exibirUsuarios(usuariosFiltrados);
+                    }
+                }, 300);
+            });
+        }
+        
+        // Ver perfil do usuário (simular - poderia abrir modal ou página específica)
+        function verPerfilUsuario(userId) {
+            const usuario = todosUsuarios.find(u => u.id === userId);
+            if (usuario) {
+                alert(`Perfil de ${usuario.nome}\n\nEmail: ${usuario.email}\nBio: ${usuario.bio || 'Sem biografia'}\n\n(Esta funcionalidade pode ser expandida para mostrar um modal ou página dedicada)`);
+            }
+        }
+        
+        // Ver postagens do usuário
+        function verPostagensUsuario(userId) {
+            const usuario = todosUsuarios.find(u => u.id === userId);
+            const postagensUsuario = todasPostagens.filter(p => p.usuario_id === userId);
+            
+            if (postagensUsuario.length === 0) {
+                alert(`${usuario.nome} ainda não fez nenhuma postagem.`);
+                return;
+            }
+            
+            const listaPostagens = postagensUsuario
+                .slice(0, 3) // Mostrar apenas as 3 mais recentes
+                .map(p => `• ${p.conteudo.substring(0, 100)}${p.conteudo.length > 100 ? '...' : ''}`)
+                .join('\n');
+            
+            alert(`Postagens recentes de ${usuario.nome}:\n\n${listaPostagens}\n\n${postagensUsuario.length > 3 ? `E mais ${postagensUsuario.length - 3} postagens...` : ''}`);
+        }
+    </script>
+</body>
+</html>

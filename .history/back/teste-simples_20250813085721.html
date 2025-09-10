@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API MicroMídia - Teste Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .online { background-color: #d4edda; color: #155724; }
+        .offline { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .result {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .success { border-color: #28a745; background-color: #d4edda; }
+        .error { border-color: #dc3545; background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 API MicroMídia - Teste Simples</h1>
+        
+        <div id="server-status" class="status warning">
+            ⏳ Verificando servidor...
+        </div>
+        
+        <p><strong>Problemas de Conexão MySQL?</strong></p>
+        <p>Se aparecer erro de MySQL, edite o arquivo <code>back/db_config.js</code> e adicione sua senha:</p>
+        <pre style="background: #f8f9fa; padding: 10px; border-radius: 4px;">
+password: 'sua_senha_mysql_aqui'</pre>
+    </div>
+
+    <div class="container">
+        <h3>📝 Teste 1: Criar Usuário</h3>
+        <form id="form-usuario">
+            <div class="form-group">
+                <label>Nome:</label>
+                <input type="text" id="nome" value="João Teste" required>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="email" value="joao@teste.com" required>
+            </div>
+            <div class="form-group">
+                <label>Senha:</label>
+                <input type="text" id="senha" value="123456" required>
+            </div>
+            <div class="form-group">
+                <label>Bio:</label>
+                <textarea id="bio">Empreendedor teste</textarea>
+            </div>
+            <button type="submit">➕ Criar Usuário</button>
+        </form>
+        <div id="resultado-usuario"></div>
+    </div>
+
+    <div class="container">
+        <h3>📋 Teste 2: Listar Usuários</h3>
+        <button onclick="listarUsuarios()">👥 Listar Usuários</button>
+        <div id="resultado-lista"></div>
+    </div>
+
+    <div class="container">
+        <h3>📝 Teste 3: Criar Postagem</h3>
+        <form id="form-postagem">
+            <div class="form-group">
+                <label>ID do Usuário:</label>
+                <input type="number" id="usuario_id" value="1" required>
+            </div>
+            <div class="form-group">
+                <label>Conteúdo:</label>
+                <textarea id="conteudo" required>Esta é minha primeira postagem no fórum!</textarea>
+            </div>
+            <button type="submit">📝 Criar Postagem</button>
+        </form>
+        <div id="resultado-postagem"></div>
+    </div>
+
+    <div class="container">
+        <h3>📰 Teste 4: Listar Postagens</h3>
+        <button onclick="listarPostagens()">📰 Listar Postagens</button>
+        <div id="resultado-postagens"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Verificar servidor ao carregar
+        window.onload = verificarServidor;
+        
+        async function verificarServidor() {
+            const statusEl = document.getElementById('server-status');
+            try {
+                const response = await fetch('http://localhost:3000/');
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.textContent = '✅ Servidor Online';
+                    statusEl.className = 'status online';
+                } else {
+                    statusEl.textContent = '⚠️ Servidor com problemas';
+                    statusEl.className = 'status warning';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Servidor Offline - Execute "npm run dev"';
+                statusEl.className = 'status offline';
+            }
+        }
+        
+        // Criar usuário
+        document.getElementById('form-usuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const dados = {
+                nome: document.getElementById('nome').value,
+                email: document.getElementById('email').value,
+                senha: document.getElementById('senha').value,
+                bio: document.getElementById('bio').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                
+                const result = await response.json();
+                const resultEl = document.getElementById('resultado-usuario');
+                
+                if (response.ok) {
+                    resultEl.innerHTML = `<div class="result success">✅ Usuário criado!
+ID: ${result.id}
+Nome: ${result.nome}
+Email: ${result.email}</div>`;
+                } else {
+                    resultEl.innerHTML = `<div class="result error">❌ Erro: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('resultado-usuario').innerHTML = 
+                    `<div class="result error">❌ Erro de conexão: ${error.message}</div>`;
+            }
+        });
+        
+        // Listar usuários
+        async function listarUsuarios() {
+            try {
+                const response = await fetch(`${API_URL}/usuarios`);
+                const users = await response.json();
+                
+                const resultEl = document.getElementById('resultado-lista');
+                
+                if (response.ok) {
+                    if (users.length === 0) {
+                        resultEl.innerHTML = '<div class="result">📭 Nenhum usuário encontrado</div>';
+                    } else {
+                        const lista = users.map(u => 
+                            `👤 ${u.nome} (${u.email}) - ID: ${u.id}`
+                        ).join('\n');
+                        resultEl.innerHTML = `<div class="result success">✅ Usuários encontrados:
+${lista}</div>`;
+                    }
+                } else {
+                    resultEl.innerHTML = `<div class="result error">❌ Erro: ${users.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('resultado-lista').innerHTML = 
+                    `<div class="result error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+        
+        // Criar postagem
+        document.getElementById('form-postagem').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const dados = {
+                usuario_id: parseInt(document.getElementById('usuario_id').value),
+                conteudo: document.getElementById('conteudo').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/postagens`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                
+                const result = await response.json();
+                const resultEl = document.getElementById('resultado-postagem');
+                
+                if (response.ok) {
+                    resultEl.innerHTML = `<div class="result success">✅ Postagem criada!
+ID: ${result.id}</div>`;
+                } else {
+                    resultEl.innerHTML = `<div class="result error">❌ Erro: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('resultado-postagem').innerHTML = 
+                    `<div class="result error">❌ Erro: ${error.message}</div>`;
+            }
+        });
+        
+        // Listar postagens
+        async function listarPostagens() {
+            try {
+                const response = await fetch(`${API_URL}/postagens`);
+                const posts = await response.json();
+                
+                const resultEl = document.getElementById('resultado-postagens');
+                
+                if (response.ok) {
+                    if (posts.length === 0) {
+                        resultEl.innerHTML = '<div class="result">📭 Nenhuma postagem encontrada</div>';
+                    } else {
+                        const lista = posts.map(p => 
+                            `📝 ${p.autor_nome}: ${p.conteudo.substring(0, 50)}...
+   ❤️ ${p.total_curtidas} curtidas | 💬 ${p.total_comentarios} comentários`
+                        ).join('\n\n');
+                        resultEl.innerHTML = `<div class="result success">✅ Postagens encontradas:
+${lista}</div>`;
+                    }
+                } else {
+                    resultEl.innerHTML = `<div class="result error">❌ Erro: ${posts.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('resultado-postagens').innerHTML = 
+                    `<div class="result error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

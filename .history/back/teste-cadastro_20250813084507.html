@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Cadastro - MicroMídia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status.online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status.offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Cadastro - MicroMídia</h1>
+        
+        <div id="server-status" class="status">
+            ⏳ Verificando servidor...
+        </div>
+        
+        <h3>📝 Cadastro de Usuário</h3>
+        <form id="cadastro-form">
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" value="João Teste" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="joao.teste@exemplo.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" value="123456" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="bio">Bio (opcional):</label>
+                <textarea id="bio">Empreendedor de teste para a plataforma</textarea>
+            </div>
+            
+            <button type="submit">🚀 Testar Cadastro</button>
+            <button type="button" onclick="limparResultado()">🗑️ Limpar</button>
+        </form>
+        
+        <div id="resultado"></div>
+        
+        <hr style="margin: 30px 0;">
+        
+        <h3>🔧 Diagnóstico Rápido</h3>
+        <button onclick="testarConexao()">🌐 Testar Servidor</button>
+        <button onclick="verificarBanco()">🗄️ Verificar Banco</button>
+        
+        <div id="diagnostico"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Verificar status do servidor ao carregar
+        window.onload = function() {
+            verificarServidor();
+        };
+        
+        async function verificarServidor() {
+            const statusEl = document.getElementById('server-status');
+            try {
+                const response = await fetch('http://localhost:3000/');
+                const data = await response.json();
+                statusEl.textContent = '✅ Servidor Online';
+                statusEl.className = 'status online';
+            } catch (error) {
+                statusEl.textContent = '❌ Servidor Offline - Inicie com "npm run dev"';
+                statusEl.className = 'status offline';
+            }
+        }
+        
+        // Formulário de cadastro
+        document.getElementById('cadastro-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const bio = document.getElementById('bio').value;
+            
+            const dadosUsuario = { nome, email, senha, bio };
+            
+            mostrarResultado('⏳ Enviando dados para cadastro...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dadosUsuario)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    mostrarResultado(`✅ SUCESSO!
+Usuário criado: ${data.user.nome}
+Email: ${data.user.email}
+Token: ${data.token.substring(0, 20)}...
+
+Resposta completa:
+${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    mostrarResultado(`❌ ERRO ${response.status}:
+${data.error}
+
+Dados enviados:
+${JSON.stringify(dadosUsuario, null, 2)}
+
+Resposta do servidor:
+${JSON.stringify(data, null, 2)}`, 'error');
+                }
+                
+            } catch (error) {
+                mostrarResultado(`💥 ERRO DE CONEXÃO:
+${error.message}
+
+Verifique se:
+1. O servidor está rodando (npm run dev)
+2. A URL está correta: ${API_URL}
+3. O CORS está configurado
+
+Dados que tentei enviar:
+${JSON.stringify(dadosUsuario, null, 2)}`, 'error');
+            }
+        });
+        
+        async function testarConexao() {
+            mostrarDiagnostico('⏳ Testando conexão com servidor...');
+            
+            try {
+                const response = await fetch('http://localhost:3000/');
+                const data = await response.json();
+                mostrarDiagnostico(`✅ Servidor funcionando!
+Resposta: ${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                mostrarDiagnostico(`❌ Servidor não está respondendo!
+Erro: ${error.message}
+
+💡 Soluções:
+1. Execute "npm run dev" no diretório back/
+2. Verifique se a porta 3000 está livre
+3. Verifique o firewall`);
+            }
+        }
+        
+        async function verificarBanco() {
+            mostrarDiagnostico('⏳ Verificando banco de dados...');
+            
+            try {
+                // Tentar fazer uma requisição que usa o banco
+                const response = await fetch(`${API_URL}/posts`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    mostrarDiagnostico(`✅ Banco de dados funcionando!
+Postagens encontradas: ${data.length}
+
+💡 Se aparecer erro 500, verifique:
+1. MySQL está rodando
+2. Banco 'micro_midia' existe
+3. Tabelas foram criadas`);
+                } else {
+                    const errorData = await response.json();
+                    mostrarDiagnostico(`⚠️ Problema no banco (Status ${response.status}):
+${JSON.stringify(errorData, null, 2)}
+
+💡 Execute o script SQL em front/SQL/micro_midia.sql`);
+                }
+            } catch (error) {
+                mostrarDiagnostico(`❌ Erro ao verificar banco:
+${error.message}`);
+            }
+        }
+        
+        function mostrarResultado(texto, tipo) {
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = `<div class="result ${tipo}">${texto}</div>`;
+        }
+        
+        function mostrarDiagnostico(texto) {
+            const diagnostico = document.getElementById('diagnostico');
+            diagnostico.innerHTML = `<div class="result info">${texto}</div>`;
+        }
+        
+        function limparResultado() {
+            document.getElementById('resultado').innerHTML = '';
+            document.getElementById('diagnostico').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

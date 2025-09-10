@@ -1,0 +1,21 @@
+{
+  "name": "micromedia-api-simples",
+  "version": "1.0.0",
+  "description": "API CRUD simples para MicroMídia - sem autenticação, sem diagnóstico, sem .env",
+  "main": "server_simples.js",
+  "scripts": {
+    "start": "node server_simples.js",
+    "dev": "nodemon server_simples.js",
+    "test": "node -e \"console.log('Testando conexão...'); require('./server_simples.js')\""
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["api", "crud", "mysql", "express", "micromedia"],
+  "author": "Anna",
+  "license": "MIT"
+}

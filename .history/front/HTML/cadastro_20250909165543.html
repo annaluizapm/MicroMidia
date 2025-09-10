@@ -1,0 +1,125 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Micro Mídia</title>
+    <link rel="stylesheet" href="../CSS/logincadastro.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <img src="../assets/Logo.png" alt="Micro Mídia">
+        </div>
+        <div class="right">
+            <div class="login-box">
+                <h2>Criar conta</h2>
+                <form id="cadastroForm">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" required>
+
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required>
+
+                    <label for="foto_perfil">Foto de Perfil (opcional)</label>
+                    <div class="foto-upload-container">
+                        <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*" style="display: none;">
+                        <div class="foto-preview" id="foto-preview" onclick="document.getElementById('foto_perfil').click()">
+                            <div class="foto-placeholder">
+                                📷<br><span style="font-size: 12px;">Clique para adicionar foto</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label for="bio">Biografia (opcional)</label>
+                    <textarea id="bio" name="bio" placeholder="Conte um pouco sobre você..."></textarea>
+
+                    <button type="submit" class="btn-primary">Cadastre-se</button>
+                    <button type="button" class="btn-secondary" onclick="window.location.href='login.html'">Fazer login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../JS/script.js"></script>
+    <script>
+        // Função de teste para verificar redirecionamento
+        function testarRedirecionamento() {
+            console.log('🔧 Teste de redirecionamento iniciado...');
+            console.log('📍 URL atual:', window.location.href);
+            console.log('📁 Pathname:', window.location.pathname);
+            
+            alert('Redirecionando para forum.html em 2 segundos...');
+            
+            setTimeout(() => {
+                console.log('🔄 Executando redirecionamento...');
+                window.location.href = 'forum.html';
+            }, 2000);
+        }
+        
+        // Função de teste para cadastro completo
+        async function testarCadastroCompleto() {
+            console.log('🧪 Iniciando teste de cadastro completo...');
+            
+            // Preencher campos automaticamente
+            document.getElementById('nome').value = 'Teste Usuario';
+            document.getElementById('email').value = 'teste' + Date.now() + '@test.com';
+            document.getElementById('senha').value = '123456';
+            document.getElementById('bio').value = 'Bio de teste';
+            
+            console.log('📝 Campos preenchidos automaticamente');
+            
+            // Simular submit
+            const form = document.getElementById('cadastroForm');
+            if (form) {
+                console.log('📤 Disparando evento de submit...');
+                const event = new Event('submit', { bubbles: true, cancelable: true });
+                form.dispatchEvent(event);
+            } else {
+                console.error('❌ Formulário não encontrado!');
+            }
+        }
+        
+        // Manipular preview da foto no cadastro
+        document.getElementById('foto_perfil').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('A imagem deve ter no máximo 5MB');
+                    return;
+                }
+                
+                if (!file.type.startsWith('image/')) {
+                    alert('Apenas arquivos de imagem são permitidos');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('foto-preview');
+                    preview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Preview da foto">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Debug: Verificar se o formulário está sendo capturado corretamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('cadastroForm');
+            if (form) {
+                console.log('✅ Formulário de cadastro encontrado');
+                
+                // Adicionar listener de debug
+                form.addEventListener('submit', function(e) {
+                    console.log('📤 Evento submit capturado!');
+                });
+            } else {
+                console.error('❌ Formulário de cadastro não encontrado');
+            }
+        });
+    </script>
+</body>
+</html>
