@@ -5,10 +5,11 @@ const API_BASE_URL = (function(){
     try{
         if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
     }catch(e){}
-    if (typeof API_BASE_URL !== 'undefined') return API_BASE_URL; // já definida em outro script
     // fallback dinâmico para `http(s)://host:port/api`
-    const port = location.port ? `:${location.port}` : '';
-    return `${location.protocol}//${location.hostname}${port}/api`;
+    const port = (typeof location !== 'undefined' && location.port) ? `:${location.port}` : '';
+    const protocol = (typeof location !== 'undefined' && location.protocol) ? location.protocol : 'http:';
+    const hostname = (typeof location !== 'undefined' && location.hostname) ? location.hostname : '127.0.0.1';
+    return `${protocol}//${hostname}${port}/api`;
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
