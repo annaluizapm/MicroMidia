@@ -136,6 +136,12 @@ function createDebugBanner(){
             }
         }
         
+        // Normaliza texto para comparação (remove acentos, transforma em minúsculas)
+        function normalizeText(str){
+            if(!str) return '';
+            return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+        }
+
         // Buscar postagens
         async function buscarPostagens(termo) {
             const url = `${API_BASE_URL}/postagens`;
@@ -149,10 +155,20 @@ function createDebugBanner(){
             if (response.ok) {
                 const postagens = await response.json();
                 console.log('[busca] postagens recebidas:', Array.isArray(postagens) ? postagens.length : typeof postagens);
-                return postagens.filter(p => 
-                    (p.conteudo || '').toLowerCase().includes(termo.toLowerCase()) ||
-                    (p.usuario_nome && p.usuario_nome.toLowerCase().includes(termo.toLowerCase()))
-                );
+                const termNorm = normalizeText(termo);
+                return postagens.filter(p => {
+                    const conteudo = normalizeText(p.conteudo || '');
+                    const usuario = normalizeText(p.usuario_nome || '');
+                    const categoria = normalizeText(p.categoria || '');
+                    const tags = normalizeText(p.tags || '');
+                    // combinar por conteúdo, autor, categoria ou tags
+                    return (
+                        conteudo.includes(termNorm) ||
+                        usuario.includes(termNorm) ||
+                        categoria.includes(termNorm) ||
+                        tags.includes(termNorm)
+                    );
+                });
             }
             const text = await response.text().catch(()=>'');
             console.warn('[busca] resposta não OK postagens:', response.status, text.slice(0,200));
