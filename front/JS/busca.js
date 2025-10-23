@@ -77,28 +77,48 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Buscar postagens
         async function buscarPostagens(termo) {
-            const response = await fetch(`${API_BASE_URL}/postagens`);
+            const url = `${API_BASE_URL}/postagens`;
+            console.log('[busca] GET', url);
+            const response = await fetch(url).catch(err => {
+                console.error('[busca] Erro fetch postagens:', err);
+                return null;
+            });
+            if (!response) return [];
+            console.log('[busca] postagens status', response.status);
             if (response.ok) {
                 const postagens = await response.json();
+                console.log('[busca] postagens recebidas:', Array.isArray(postagens) ? postagens.length : typeof postagens);
                 return postagens.filter(p => 
-                    p.conteudo.toLowerCase().includes(termo.toLowerCase()) ||
+                    (p.conteudo || '').toLowerCase().includes(termo.toLowerCase()) ||
                     (p.usuario_nome && p.usuario_nome.toLowerCase().includes(termo.toLowerCase()))
                 );
             }
+            const text = await response.text().catch(()=>'');
+            console.warn('[busca] resposta não OK postagens:', response.status, text.slice(0,200));
             return [];
         }
         
         // Buscar usuários  
         async function buscarUsuarios(termo) {
-            const response = await fetch(`${API_BASE_URL}/usuarios`);
+            const url = `${API_BASE_URL}/usuarios`;
+            console.log('[busca] GET', url);
+            const response = await fetch(url).catch(err => {
+                console.error('[busca] Erro fetch usuarios:', err);
+                return null;
+            });
+            if (!response) return [];
+            console.log('[busca] usuarios status', response.status);
             if (response.ok) {
                 const usuarios = await response.json();
+                console.log('[busca] usuarios recebidos:', Array.isArray(usuarios) ? usuarios.length : typeof usuarios);
                 return usuarios.filter(u => 
-                    u.nome.toLowerCase().includes(termo.toLowerCase()) ||
-                    u.email.toLowerCase().includes(termo.toLowerCase()) ||
+                    (u.nome || '').toLowerCase().includes(termo.toLowerCase()) ||
+                    (u.email || '').toLowerCase().includes(termo.toLowerCase()) ||
                     (u.bio && u.bio.toLowerCase().includes(termo.toLowerCase()))
                 );
             }
+            const text = await response.text().catch(()=>'');
+            console.warn('[busca] resposta não OK usuarios:', response.status, text.slice(0,200));
             return [];
         }
         
