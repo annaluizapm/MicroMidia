@@ -41,41 +41,13 @@ function createDebugBanner(){
     info.style.marginBottom = '8px';
     info.innerText = `API_BASE_URL: ${API_BASE_URL}`;
 
-    const btn = document.createElement('button');
-    btn.innerText = 'Testar /api/postagens';
-    btn.style.cursor = 'pointer';
-    btn.style.padding = '6px 10px';
-    btn.style.borderRadius = '6px';
-    btn.style.border = 'none';
-    btn.style.background = '#D90429';
-    btn.style.color = 'white';
-    btn.style.fontWeight = '600';
-
+    // status (pode ser atualizado pelo fluxo de busca)
     const status = document.createElement('div');
     status.id = 'debug-status';
     status.style.marginTop = '8px';
     status.style.fontSize = '12px';
 
-    btn.addEventListener('click', async () => {
-        status.innerText = 'Testando...';
-        try {
-            const res = await fetch(`${API_BASE_URL}/postagens`);
-            status.innerText = `Status: ${res.status} ${res.statusText}`;
-            if (res.ok) {
-                const data = await res.json();
-                status.innerText += ` — postagens: ${Array.isArray(data) ? data.length : 'n/a'}`;
-            } else {
-                const text = await res.text();
-                status.innerText += ` — resposta: ${text.slice(0,120)}`;
-            }
-        } catch (err) {
-            status.innerText = 'Erro: ' + (err.message || err);
-            console.error('Debug banner fetch error:', err);
-        }
-    });
-
     banner.appendChild(info);
-    banner.appendChild(btn);
     banner.appendChild(status);
     document.body.appendChild(banner);
 }
