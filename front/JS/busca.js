@@ -1,7 +1,22 @@
-   document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('busca-form').addEventListener('submit', handleBusca);
-            document.getElementById('termo-busca').addEventListener('input', handleBuscaTempoReal);
-        });
+// Garantir que exista uma URL base para a API. Se outra parte do app definiu
+// `API_BASE_URL` no escopo global (por exemplo em `script.js`), usamos ela;
+// caso contrário, montamos uma URL relativa com base em `location`.
+const API_BASE_URL = (function(){
+    try{
+        if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
+    }catch(e){}
+    if (typeof API_BASE_URL !== 'undefined') return API_BASE_URL; // já definida em outro script
+    // fallback dinâmico para `http(s)://host:port/api`
+    const port = location.port ? `:${location.port}` : '';
+    return `${location.protocol}//${location.hostname}${port}/api`;
+})();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('busca-form');
+    if(form) form.addEventListener('submit', handleBusca);
+    const termoInput = document.getElementById('termo-busca');
+    if(termoInput) termoInput.addEventListener('input', handleBuscaTempoReal);
+});
         
         let timeoutBusca;
         
