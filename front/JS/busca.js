@@ -17,7 +17,68 @@ document.addEventListener('DOMContentLoaded', () => {
     if(form) form.addEventListener('submit', handleBusca);
     const termoInput = document.getElementById('termo-busca');
     if(termoInput) termoInput.addEventListener('input', handleBuscaTempoReal);
+    // adicionar banner de debug para facilitar diagnóstico em tempo real
+    try { createDebugBanner(); } catch(e){ console.warn('Não foi possível criar debug banner:', e); }
 });
+
+// Cria um pequeno banner no topo da página com informações de debug e um botão
+function createDebugBanner(){
+    if (document.getElementById('debug-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'debug-banner';
+    banner.style.position = 'fixed';
+    banner.style.top = '10px';
+    banner.style.right = '10px';
+    banner.style.zIndex = 9999;
+    banner.style.background = 'rgba(0,0,0,0.75)';
+    banner.style.color = 'white';
+    banner.style.padding = '10px 12px';
+    banner.style.borderRadius = '8px';
+    banner.style.fontSize = '13px';
+    banner.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
+
+    const info = document.createElement('div');
+    info.style.marginBottom = '8px';
+    info.innerText = `API_BASE_URL: ${API_BASE_URL}`;
+
+    const btn = document.createElement('button');
+    btn.innerText = 'Testar /api/postagens';
+    btn.style.cursor = 'pointer';
+    btn.style.padding = '6px 10px';
+    btn.style.borderRadius = '6px';
+    btn.style.border = 'none';
+    btn.style.background = '#D90429';
+    btn.style.color = 'white';
+    btn.style.fontWeight = '600';
+
+    const status = document.createElement('div');
+    status.id = 'debug-status';
+    status.style.marginTop = '8px';
+    status.style.fontSize = '12px';
+
+    btn.addEventListener('click', async () => {
+        status.innerText = 'Testando...';
+        try {
+            const res = await fetch(`${API_BASE_URL}/postagens`);
+            status.innerText = `Status: ${res.status} ${res.statusText}`;
+            if (res.ok) {
+                const data = await res.json();
+                status.innerText += ` — postagens: ${Array.isArray(data) ? data.length : 'n/a'}`;
+            } else {
+                const text = await res.text();
+                status.innerText += ` — resposta: ${text.slice(0,120)}`;
+            }
+        } catch (err) {
+            status.innerText = 'Erro: ' + (err.message || err);
+            console.error('Debug banner fetch error:', err);
+        }
+    });
+
+    banner.appendChild(info);
+    banner.appendChild(btn);
+    banner.appendChild(status);
+    document.body.appendChild(banner);
+}
         
         let timeoutBusca;
         
