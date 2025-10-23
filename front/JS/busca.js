@@ -17,39 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if(form) form.addEventListener('submit', handleBusca);
     const termoInput = document.getElementById('termo-busca');
     if(termoInput) termoInput.addEventListener('input', handleBuscaTempoReal);
-    // adicionar banner de debug para facilitar diagnóstico em tempo real
-    try { createDebugBanner(); } catch(e){ console.warn('Não foi possível criar debug banner:', e); }
+    
 });
 
 // Cria um pequeno banner no topo da página com informações de debug e um botão
 function createDebugBanner(){
-    if (document.getElementById('debug-banner')) return;
-    const banner = document.createElement('div');
-    banner.id = 'debug-banner';
-    banner.style.position = 'fixed';
-    banner.style.top = '10px';
-    banner.style.right = '10px';
-    banner.style.zIndex = 9999;
-    banner.style.background = 'rgba(0,0,0,0.75)';
-    banner.style.color = 'white';
-    banner.style.padding = '10px 12px';
-    banner.style.borderRadius = '8px';
-    banner.style.fontSize = '13px';
-    banner.style.boxShadow = '0 6px 18px rgba(0,0,0,0.25)';
-
-    const info = document.createElement('div');
-    info.style.marginBottom = '8px';
-    info.innerText = `API_BASE_URL: ${API_BASE_URL}`;
-
-    // status (pode ser atualizado pelo fluxo de busca)
-    const status = document.createElement('div');
-    status.id = 'debug-status';
-    status.style.marginTop = '8px';
-    status.style.fontSize = '12px';
-
-    banner.appendChild(info);
-    banner.appendChild(status);
-    document.body.appendChild(banner);
+    
 }
         
         let timeoutBusca;
