@@ -99,11 +99,28 @@ img:hover {
 }
 
 /* Home Header - Slogan e Descrição */
+.content-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+    max-width: 900px;
+}
+
+.logo-section {
+    flex-shrink: 0;
+}
+
+.logo-section img {
+    max-width: 200px;
+    height: auto;
+}
+
 .home-header {
-    text-align: center;
-    max-width: 600px;
-    margin: 10px 0;
-    padding: 0 20px;
+    text-align: left;
+    flex: 1;
+    padding: 0;
 }
 
 .slogan {
@@ -121,7 +138,7 @@ img:hover {
     color: #333;
     line-height: 1.6;
     text-align: justify;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 
 /* Responsividade para telas menores */
@@ -131,12 +148,26 @@ img:hover {
         gap: 20px;
     }
 
+    .content-wrapper {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .logo-section img {
+        max-width: 150px;
+    }
+
+    .home-header {
+        text-align: center;
+    }
+
     .slogan {
         font-size: 22px;
     }
 
     .home-desc {
         font-size: 14px;
+        text-align: center;
     }
 
     .buttons {
