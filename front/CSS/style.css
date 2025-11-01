@@ -9,9 +9,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    overflow: hidden;
+    overflow-x: hidden;
+    padding: 20px 0;
 }
 
 .container {
@@ -180,5 +181,176 @@ img:hover {
     .btn-primary {
         width: 100%;
         max-width: 250px;
+    }
+}
+
+/* Seções Adicionais */
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #D90429;
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+/* Seção de Benefícios */
+.benefits-section {
+    width: 100%;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(217, 4, 41, 0.1);
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.benefit-card {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(217, 4, 41, 0.15);
+}
+
+.benefit-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.benefit-card h3 {
+    color: #D90429;
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.benefit-card p {
+    color: #555;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Seção Como Funciona */
+.how-it-works {
+    width: 100%;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(217, 4, 41, 0.1);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.step-card {
+    background: linear-gradient(135deg, #D90429 0%, #ff6b8a 100%);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(217, 4, 41, 0.3);
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(217, 4, 41, 0.4);
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: white;
+    color: #D90429;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 auto 15px;
+}
+
+.step-card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.step-card p {
+    font-size: 15px;
+    line-height: 1.5;
+    opacity: 0.95;
+}
+
+/* Footer */
+.index-footer {
+    width: 100%;
+    margin-top: 50px;
+    padding-top: 25px;
+    border-top: 2px solid rgba(217, 4, 41, 0.1);
+    text-align: center;
+}
+
+.index-footer p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: #D90429;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #ff6b8a;
+    text-decoration: underline;
+}
+
+/* Responsividade para novas seções */
+@media (max-width: 768px) {
+    .benefits-grid,
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .section-title {
+        font-size: 24px;
+    }
+
+    .benefit-card,
+    .step-card {
+        padding: 20px;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
     }
 }
