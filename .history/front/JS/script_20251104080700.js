@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Se não há usuário logado e estamos em uma página que requer login
         const currentPage = window.location.pathname;
-        if (currentPage.includes('feed.html') || currentPage.includes('perfil.html')) {
+        if (currentPage.includes('forum.html') || currentPage.includes('perfil.html')) {
             mostrarMensagem('Você precisa estar logado para acessar esta página', 'erro');
             setTimeout(() => {
                 window.location.href = 'login.html';
@@ -649,12 +649,12 @@ async function handleCadastro_OLD(event) {
                     console.log('📍 URL atual antes do redirecionamento:', window.location.href);
                     
                     try {
-                        window.location.href = 'feed.html';
+                        window.location.href = 'forum.html';
                         console.log('✅ Redirecionamento executado');
                     } catch (redirectError) {
                         console.error('❌ Erro no redirecionamento:', redirectError);
                         // Fallback
-                        window.location.replace('feed.html');
+                        window.location.replace('forum.html');
                     }
                 }, 100); // Reduzir tempo para 100ms
                 
@@ -688,7 +688,7 @@ async function handleLogin(event) {
             if (usuario) {
                 mostrarMensagem('Login realizado com sucesso!', 'sucesso');
                 localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
-                window.location.href = 'feed.html';
+                window.location.href = 'forum.html';
             } else {
                 mostrarMensagem('Email ou senha incorretos', 'erro');
             }
@@ -886,7 +886,7 @@ async function handleCadastroCorrigido(event) {
             localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
             limparFormulario('cadastroForm');
             // Redirecionamento imediato sem alert
-            window.location.href = 'feed.html';
+            window.location.href = 'forum.html';
         } else {
             mostrarMensagem('Erro ao criar usuário', 'erro');
         }

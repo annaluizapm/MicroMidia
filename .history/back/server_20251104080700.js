@@ -88,16 +88,7 @@ app.get('/api/usuarios', async (req, res) => {
 app.get('/api/usuarios/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const [users] = await db.execute(
-            `SELECT 
-                id, nome, email, bio, foto_perfil, 
-                empresa, segmento, cargo, 
-                site_empresa, linkedin, 
-                habilidades, interesses, 
-                criado_em 
-            FROM usuarios WHERE id = ?`, 
-            [id]
-        );
+        const [users] = await db.execute('SELECT id, nome, email, bio, foto_perfil, criado_em FROM usuarios WHERE id = ?', [id]);
         
         if (users.length === 0) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -138,16 +129,7 @@ app.post('/api/usuarios', async (req, res) => {
         console.log('✅ Usuário inserido com ID:', result.insertId);
         
         // Buscar o usuário recém-criado
-        const [newUser] = await db.execute(
-            `SELECT 
-                id, nome, email, bio, foto_perfil, 
-                empresa, segmento, cargo, 
-                site_empresa, linkedin, 
-                habilidades, interesses, 
-                criado_em 
-            FROM usuarios WHERE id = ?`, 
-            [result.insertId]
-        );
+        const [newUser] = await db.execute('SELECT id, nome, email, bio, foto_perfil, empresa, segmento, cargo, criado_em FROM usuarios WHERE id = ?', [result.insertId]);
         console.log('📋 Usuário criado:', newUser[0]);
         
         res.status(201).json({ message: 'Usuário criado com sucesso!', usuario: newUser[0] });
@@ -183,16 +165,7 @@ app.post('/api/usuarios/:id/foto', upload.single('foto_perfil'), async (req, res
         );
         
         // Buscar o usuário atualizado
-        const [updatedUser] = await db.execute(
-            `SELECT 
-                id, nome, email, bio, foto_perfil, 
-                empresa, segmento, cargo, 
-                site_empresa, linkedin, 
-                habilidades, interesses, 
-                criado_em 
-            FROM usuarios WHERE id = ?`, 
-            [id]
-        );
+        const [updatedUser] = await db.execute('SELECT id, nome, email, bio, foto_perfil, criado_em FROM usuarios WHERE id = ?', [id]);
         
         res.json({ 
             message: 'Foto de perfil atualizada com sucesso!', 
@@ -270,19 +243,7 @@ app.post('/api/usuarios/:id/foto-base64', async (req, res) => {
 app.put('/api/usuarios/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { 
-            nome, 
-            email, 
-            bio, 
-            foto_perfil,
-            empresa,
-            segmento,
-            cargo,
-            site_empresa,
-            linkedin,
-            habilidades,
-            interesses
-        } = req.body;
+        const { nome, email, bio, foto_perfil } = req.body;
         
         if (!nome || !email) {
             return res.status(400).json({ error: 'Nome e email são obrigatórios' });
@@ -300,48 +261,21 @@ app.put('/api/usuarios/:id', async (req, res) => {
             return res.status(400).json({ error: 'Email já está em uso por outro usuário' });
         }
         
-        // Atualizar o usuário com todos os campos
-        await db.execute(
-            `UPDATE usuarios SET 
-                nome = ?, 
-                email = ?, 
-                bio = ?, 
-                foto_perfil = ?,
-                empresa = ?,
-                segmento = ?,
-                cargo = ?,
-                site_empresa = ?,
-                linkedin = ?,
-                habilidades = ?,
-                interesses = ?
-            WHERE id = ?`,
-            [
-                nome, 
-                email, 
-                bio || null, 
-                foto_perfil || null,
-                empresa || null,
-                segmento || null,
-                cargo || null,
-                site_empresa || null,
-                linkedin || null,
-                habilidades || null,
-                interesses || null,
-                id
-            ]
-        );
+        // Atualizar o usuário (incluindo foto_perfil se fornecida)
+        if (foto_perfil) {
+            await db.execute(
+                'UPDATE usuarios SET nome = ?, email = ?, bio = ?, foto_perfil = ? WHERE id = ?',
+                [nome, email, bio || null, foto_perfil, id]
+            );
+        } else {
+            await db.execute(
+                'UPDATE usuarios SET nome = ?, email = ?, bio = ? WHERE id = ?',
+                [nome, email, bio || null, id]
+            );
+        }
         
         // Buscar o usuário atualizado
-        const [updatedUser] = await db.execute(
-            `SELECT 
-                id, nome, email, bio, foto_perfil, 
-                empresa, segmento, cargo, 
-                site_empresa, linkedin, 
-                habilidades, interesses, 
-                criado_em 
-            FROM usuarios WHERE id = ?`, 
-            [id]
-        );
+        const [updatedUser] = await db.execute('SELECT id, nome, email, bio, foto_perfil, criado_em FROM usuarios WHERE id = ?', [id]);
         
         res.json({ 
             message: 'Usuário atualizado com sucesso!', 

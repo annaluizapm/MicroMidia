@@ -138,16 +138,7 @@ app.post('/api/usuarios', async (req, res) => {
         console.log('✅ Usuário inserido com ID:', result.insertId);
         
         // Buscar o usuário recém-criado
-        const [newUser] = await db.execute(
-            `SELECT 
-                id, nome, email, bio, foto_perfil, 
-                empresa, segmento, cargo, 
-                site_empresa, linkedin, 
-                habilidades, interesses, 
-                criado_em 
-            FROM usuarios WHERE id = ?`, 
-            [result.insertId]
-        );
+        const [newUser] = await db.execute('SELECT id, nome, email, bio, foto_perfil, empresa, segmento, cargo, criado_em FROM usuarios WHERE id = ?', [result.insertId]);
         console.log('📋 Usuário criado:', newUser[0]);
         
         res.status(201).json({ message: 'Usuário criado com sucesso!', usuario: newUser[0] });
@@ -183,16 +174,7 @@ app.post('/api/usuarios/:id/foto', upload.single('foto_perfil'), async (req, res
         );
         
         // Buscar o usuário atualizado
-        const [updatedUser] = await db.execute(
-            `SELECT 
-                id, nome, email, bio, foto_perfil, 
-                empresa, segmento, cargo, 
-                site_empresa, linkedin, 
-                habilidades, interesses, 
-                criado_em 
-            FROM usuarios WHERE id = ?`, 
-            [id]
-        );
+        const [updatedUser] = await db.execute('SELECT id, nome, email, bio, foto_perfil, criado_em FROM usuarios WHERE id = ?', [id]);
         
         res.json({ 
             message: 'Foto de perfil atualizada com sucesso!', 

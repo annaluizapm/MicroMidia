@@ -654,7 +654,7 @@ async function handleCadastro_OLD(event) {
                     } catch (redirectError) {
                         console.error('❌ Erro no redirecionamento:', redirectError);
                         // Fallback
-                        window.location.replace('feed.html');
+                        window.location.replace('forum.html');
                     }
                 }, 100); // Reduzir tempo para 100ms
                 
@@ -688,7 +688,7 @@ async function handleLogin(event) {
             if (usuario) {
                 mostrarMensagem('Login realizado com sucesso!', 'sucesso');
                 localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
-                window.location.href = 'feed.html';
+                window.location.href = 'forum.html';
             } else {
                 mostrarMensagem('Email ou senha incorretos', 'erro');
             }
@@ -886,7 +886,7 @@ async function handleCadastroCorrigido(event) {
             localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
             limparFormulario('cadastroForm');
             // Redirecionamento imediato sem alert
-            window.location.href = 'feed.html';
+            window.location.href = 'forum.html';
         } else {
             mostrarMensagem('Erro ao criar usuário', 'erro');
         }

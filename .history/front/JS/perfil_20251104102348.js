@@ -149,7 +149,7 @@ async function handleSalvarPerfil(event) {
     const nome = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();
     
-    // Informações pessoais
+    // Verificar se o elemento bio existe antes de tentar obter seu valor
     let bio = '';
     const bioElement = document.getElementById('bio');
     if (bioElement) {
@@ -159,50 +159,6 @@ async function handleSalvarPerfil(event) {
     if (!nome || !email) {
         mostrarMensagem('Nome e email são obrigatórios', 'erro');
         return;
-    }
-    
-    // Informações do negócio
-    let empresa = '';
-    const empresaElement = document.getElementById('empresa');
-    if (empresaElement) {
-        empresa = empresaElement.value.trim();
-    }
-    
-    let segmento = '';
-    const segmentoElement = document.getElementById('segmento');
-    if (segmentoElement) {
-        segmento = segmentoElement.value.trim();
-    }
-    
-    let cargo = '';
-    const cargoElement = document.getElementById('cargo');
-    if (cargoElement) {
-        cargo = cargoElement.value.trim();
-    }
-    
-    let site_empresa = '';
-    const siteEmpresaElement = document.getElementById('site_empresa');
-    if (siteEmpresaElement) {
-        site_empresa = siteEmpresaElement.value.trim();
-    }
-    
-    let linkedin = '';
-    const linkedinElement = document.getElementById('linkedin');
-    if (linkedinElement) {
-        linkedin = linkedinElement.value.trim();
-    }
-    
-    // Habilidades e interesses
-    let habilidades = '';
-    const habilidadesElement = document.getElementById('habilidades');
-    if (habilidadesElement) {
-        habilidades = habilidadesElement.value.trim();
-    }
-    
-    let interesses = '';
-    const interessesElement = document.getElementById('interesses');
-    if (interessesElement) {
-        interesses = interessesElement.value.trim();
     }
     
     try {
@@ -223,14 +179,7 @@ async function handleSalvarPerfil(event) {
             body: JSON.stringify({ 
                 nome, 
                 email, 
-                bio,
-                empresa,
-                segmento,
-                cargo,
-                site_empresa,
-                linkedin,
-                habilidades,
-                interesses
+                bio 
             })
         });
         
@@ -242,13 +191,6 @@ async function handleSalvarPerfil(event) {
             usuarioAtual.nome = nome;
             usuarioAtual.email = email;
             usuarioAtual.bio = bio;
-            usuarioAtual.empresa = empresa;
-            usuarioAtual.segmento = segmento;
-            usuarioAtual.cargo = cargo;
-            usuarioAtual.site_empresa = site_empresa;
-            usuarioAtual.linkedin = linkedin;
-            usuarioAtual.habilidades = habilidades;
-            usuarioAtual.interesses = interesses;
             localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtual));
         } else {
             // Tratamento seguro para resposta não-JSON

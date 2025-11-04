@@ -104,22 +104,6 @@
             border-color: #D90429;
         }
         
-        .form-group select {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-            background-color: white;
-            cursor: pointer;
-        }
-        
-        .form-group select:focus {
-            outline: none;
-            border-color: #D90429;
-            box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.1);
-        }
-        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -400,9 +384,6 @@
         <!-- Conteúdo Principal -->
         <div class="perfil-content">
             <form class="perfil-form" id="perfil-form">
-                <!-- Informações Pessoais -->
-                <h3 style="color: #333; border-bottom: 2px solid #D90429; padding-bottom: 10px; margin-bottom: 15px;">👤 Informações Pessoais</h3>
-                
                 <div class="form-group">
                     <label for="nome">Nome:</label>
                     <input type="text" id="nome" name="nome" required>
@@ -416,58 +397,6 @@
                 <div class="form-group">
                     <label for="bio">Biografia:</label>
                     <textarea id="bio" name="bio" rows="3" placeholder="Conte um pouco sobre você..."></textarea>
-                </div>
-                
-                <!-- Informações do Negócio -->
-                <h3 style="color: #333; border-bottom: 2px solid #D90429; padding-bottom: 10px; margin-bottom: 15px; margin-top: 30px;">🏢 Informações do Negócio</h3>
-                
-                <div class="form-group">
-                    <label for="empresa">Nome da Empresa:</label>
-                    <input type="text" id="empresa" name="empresa" placeholder="Sua empresa">
-                </div>
-                
-                <div class="form-group">
-                    <label for="segmento">Segmento de Mercado:</label>
-                    <select id="segmento" name="segmento">
-                        <option value="">Selecione um segmento</option>
-                        <option value="tecnologia">Tecnologia</option>
-                        <option value="saude">Saúde</option>
-                        <option value="educacao">Educação</option>
-                        <option value="financas">Finanças</option>
-                        <option value="varejo">Varejo</option>
-                        <option value="servicos">Serviços</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="consultoria">Consultoria</option>
-                        <option value="outro">Outro</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cargo">Seu Cargo:</label>
-                    <input type="text" id="cargo" name="cargo" placeholder="Seu cargo/posição">
-                </div>
-                
-                <div class="form-group">
-                    <label for="site_empresa">Site da Empresa:</label>
-                    <input type="url" id="site_empresa" name="site_empresa" placeholder="https://www.exemplo.com">
-                </div>
-                
-                <div class="form-group">
-                    <label for="linkedin">Perfil LinkedIn:</label>
-                    <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/seu-perfil">
-                </div>
-                
-                <!-- Habilidades e Interesses -->
-                <h3 style="color: #333; border-bottom: 2px solid #D90429; padding-bottom: 10px; margin-bottom: 15px; margin-top: 30px;">⭐ Habilidades e Interesses</h3>
-                
-                <div class="form-group">
-                    <label for="habilidades">Habilidades (separadas por vírgula):</label>
-                    <textarea id="habilidades" name="habilidades" rows="2" placeholder="Ex: JavaScript, Design, Gestão de Projetos..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="interesses">Interesses (separados por vírgula):</label>
-                    <textarea id="interesses" name="interesses" rows="2" placeholder="Ex: Inovação, Marketing Digital, Startups..."></textarea>
                 </div>
                 
                 <button type="submit" class="btn-salvar">💾 Salvar Alterações</button>

@@ -886,7 +886,7 @@ async function handleCadastroCorrigido(event) {
             localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
             limparFormulario('cadastroForm');
             // Redirecionamento imediato sem alert
-            window.location.href = 'feed.html';
+            window.location.href = 'forum.html';
         } else {
             mostrarMensagem('Erro ao criar usuário', 'erro');
         }
