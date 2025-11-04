@@ -5,8 +5,11 @@ const API_BASE_URL = (function(){
     try{
         if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
     }catch(e){}
-    // Sempre usar a porta 3002 do servidor Node.js, mesmo se estiver em Live Server
-    return 'http://127.0.0.1:3002/api';
+    // fallback dinâmico para `http(s)://host:port/api`
+    const port = (typeof location !== 'undefined' && location.port) ? `:${location.port}` : '';
+    const protocol = (typeof location !== 'undefined' && location.protocol) ? location.protocol : 'http:';
+    const hostname = (typeof location !== 'undefined' && location.hostname) ? location.hostname : '127.0.0.1';
+    return `${protocol}//${hostname}${port}/api`;
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,13 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(form) form.addEventListener('submit', handleBusca);
     const termoInput = document.getElementById('termo-busca');
     if(termoInput) termoInput.addEventListener('input', handleBuscaTempoReal);
-    
 });
-
-// Cria um pequeno banner no topo da página com informações de debug e um botão
-function createDebugBanner(){
-    
-}
         
         let timeoutBusca;
         
@@ -78,12 +75,6 @@ function createDebugBanner(){
             }
         }
         
-        // Normaliza texto para comparação (remove acentos, transforma em minúsculas)
-        function normalizeText(str){
-            if(!str) return '';
-            return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
-        }
-
         // Buscar postagens
         async function buscarPostagens(termo) {
             const url = `${API_BASE_URL}/postagens`;
@@ -97,20 +88,10 @@ function createDebugBanner(){
             if (response.ok) {
                 const postagens = await response.json();
                 console.log('[busca] postagens recebidas:', Array.isArray(postagens) ? postagens.length : typeof postagens);
-                const termNorm = normalizeText(termo);
-                return postagens.filter(p => {
-                    const conteudo = normalizeText(p.conteudo || '');
-                    const usuario = normalizeText(p.usuario_nome || '');
-                    const categoria = normalizeText(p.categoria || '');
-                    const tags = normalizeText(p.tags || '');
-                    // combinar por conteúdo, autor, categoria ou tags
-                    return (
-                        conteudo.includes(termNorm) ||
-                        usuario.includes(termNorm) ||
-                        categoria.includes(termNorm) ||
-                        tags.includes(termNorm)
-                    );
-                });
+                return postagens.filter(p => 
+                    (p.conteudo || '').toLowerCase().includes(termo.toLowerCase()) ||
+                    (p.usuario_nome && p.usuario_nome.toLowerCase().includes(termo.toLowerCase()))
+                );
             }
             const text = await response.text().catch(()=>'');
             console.warn('[busca] resposta não OK postagens:', response.status, text.slice(0,200));

@@ -5,8 +5,11 @@ const API_BASE_URL = (function(){
     try{
         if (typeof window !== 'undefined' && window.API_BASE_URL) return window.API_BASE_URL;
     }catch(e){}
-    // Sempre usar a porta 3002 do servidor Node.js, mesmo se estiver em Live Server
-    return 'http://127.0.0.1:3002/api';
+    // fallback dinâmico para `http(s)://host:port/api`
+    const port = (typeof location !== 'undefined' && location.port) ? `:${location.port}` : '';
+    const protocol = (typeof location !== 'undefined' && location.protocol) ? location.protocol : 'http:';
+    const hostname = (typeof location !== 'undefined' && location.hostname) ? location.hostname : '127.0.0.1';
+    return `${protocol}//${hostname}${port}/api`;
 })();
 
 document.addEventListener('DOMContentLoaded', () => {

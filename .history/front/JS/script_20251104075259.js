@@ -847,9 +847,6 @@ async function handleCadastroCorrigido(event) {
     const email = document.getElementById('email')?.value;
     const senha = document.getElementById('senha')?.value;
     const bio = document.getElementById('bio')?.value || '';
-    const empresa = document.getElementById('empresa')?.value || '';
-    const segmento = document.getElementById('segmento')?.value || '';
-    const cargo = document.getElementById('cargo')?.value || '';
     
     if (!nome || !email || !senha) {
         mostrarMensagem('Por favor, preencha todos os campos obrigatórios', 'erro');
@@ -858,7 +855,7 @@ async function handleCadastroCorrigido(event) {
     
     try {
         // Primeiro criar o usuário
-        const usuario = await criarUsuario(nome, email, senha, bio, '', empresa, segmento, cargo);
+        const usuario = await criarUsuario(nome, email, senha, bio, '');
         
         if (usuario && usuario.id) {
             // Se há uma foto selecionada, fazer upload dela

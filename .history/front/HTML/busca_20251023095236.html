@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar - Micro Mídia</title>
+    <link rel="stylesheet" href="../CSS/busca.css">
+   
+</head>
+<body>
+    <a href="forum.html" class="voltar-btn">← Voltar ao Fórum</a>
+    
+    <div class="busca-container">
+        <div class="busca-header">
+            <h1>🔍 Buscar no Fórum</h1>
+            <p>Encontre postagens e usuários rapidamente</p>
+        </div>
+        
+        <div class="busca-rapida">
+            <div class="tag-busca" onclick="buscarRapida('dica')">💡 Dicas</div>
+            <div class="tag-busca" onclick="buscarRapida('ajuda')">🆘 Ajuda</div>
+            <div class="tag-busca" onclick="buscarRapida('negócio')">💼 Negócios</div>
+            <div class="tag-busca" onclick="buscarRapida('marketing')">📈 Marketing</div>
+        </div>
+        
+        <form class="busca-form" id="busca-form">
+            <input 
+                type="text" 
+                id="termo-busca" 
+                class="busca-input" 
+                placeholder="Digite o que você está procurando..."
+                autocomplete="off"
+            >
+            
+            <select id="filtro-tipo" class="filtro-select">
+                <option value="postagens">Postagens</option>
+                <option value="usuarios">Usuários</option>
+                <option value="todos">Todos</option>
+            </select>
+            
+            <button type="submit" class="btn-buscar">Buscar</button>
+        </form>
+        
+        <div id="resultados-container">
+            <div class="sem-resultados">
+                <h3>👋 Pronto para buscar!</h3>
+                <p>Digite um termo acima ou clique em uma das tags para começar</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../JS/script.js"></script>
+    <script>
+     
+    </script>
+</body>
+</html>
