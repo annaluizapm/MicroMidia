@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diagnóstico de Marketing Digital</title>
-    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -60,47 +60,10 @@
 
                 <button type="submit" class="btn-primary">Receber Diagnóstico</button>
             </form>
-
-            <!-- Seção de Resultado -->
-            <div id="resultado-container" style="display: none; margin-top: 40px; padding: 30px; background: white; border-radius: 15px; border: 2px solid #D90429;">
-                <h3 style="color: #D90429; margin-top: 0;">📊 Seu Diagnóstico de Marketing Digital</h3>
-                <div id="loading" style="text-align: center; padding: 40px;">
-                    <div style="display: inline-block; width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #D90429; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    <p style="margin-top: 20px; color: #666;">Gerando seu diagnóstico personalizado...</p>
-                </div>
-                <div id="resultado-conteudo" style="display: none; line-height: 1.8; color: #333;"></div>
-                <button onclick="voltarFormulario()" class="btn-primary" id="btn-novo" style="display: none; margin-top: 20px;">✨ Fazer Novo Diagnóstico</button>
-            </div>
         </main>
     </div>
 
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        #resultado-conteudo h4 {
-            color: #D90429;
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
-        
-        #resultado-conteudo p {
-            margin-bottom: 15px;
-        }
-        
-        #resultado-conteudo ul {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        #resultado-conteudo li {
-            margin-bottom: 8px;
-        }
-    </style>
-
     <!-- Importa o JavaScript externo -->
-    <script src="../JS/formulario.js"></script>
+    <script src="formulario.js"></script>
 </body>
 </html>

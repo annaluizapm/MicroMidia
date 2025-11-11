@@ -204,7 +204,9 @@ async function handleSalvarPerfil(event) {
                 segmento,
                 cargo,
                 site_empresa,
-                linkedin
+                linkedin,
+                habilidades,
+                interesses
             })
         });
         
@@ -221,6 +223,8 @@ async function handleSalvarPerfil(event) {
             usuarioAtual.cargo = cargo;
             usuarioAtual.site_empresa = site_empresa;
             usuarioAtual.linkedin = linkedin;
+            usuarioAtual.habilidades = habilidades;
+            usuarioAtual.interesses = interesses;
             localStorage.setItem('usuarioLogado', JSON.stringify(usuarioAtual));
         } else {
             // Tratamento seguro para resposta não-JSON
