@@ -6,6 +6,9 @@ const fs = require('fs');
 const db = require('./db_config');
 
 const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
 const PORT = process.env.PORT || 3002;
 
 // ================================
@@ -792,10 +795,241 @@ Seu principal objetivo é **${objetivos[objetivo] || objetivo}**, o que demonstr
 📱 **Dica extra:** Use a MicroMídia para compartilhar sua jornada, fazer perguntas e aprender com outros empreendedores que estão no mesmo caminho que você!`;
 }
 
-// Iniciar servidor
-app.listen(PORT, '127.0.0.1', () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
-    console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📡 Acesse: http://127.0.0.1:${PORT}`);
-    console.log(`🧪 Teste: http://127.0.0.1:${PORT}/api/test`);
+// ================================
+// API DE CHAT - CONVERSAS E MENSAGENS
+// ================================
+
+// GET - Listar conversas do usuário logado
+app.get('/api/conversas/:usuarioId', async (req, res) => {
+    try {
+        const { usuarioId } = req.params;
+        
+        const [conversas] = await db.execute(`
+            SELECT DISTINCT
+                c.id,
+                c.tipo,
+                c.nome,
+                c.criado_em,
+                c.atualizado_em,
+                (SELECT u2.id 
+                 FROM participantes_conversa pc2 
+                 JOIN usuarios u2 ON pc2.usuario_id = u2.id 
+                 WHERE pc2.conversa_id = c.id 
+                 AND pc2.usuario_id != ? 
+                 LIMIT 1) as outro_usuario_id,
+                (SELECT u2.nome 
+                 FROM participantes_conversa pc2 
+                 JOIN usuarios u2 ON pc2.usuario_id = u2.id 
+                 WHERE pc2.conversa_id = c.id 
+                 AND pc2.usuario_id != ? 
+                 LIMIT 1) as outro_usuario_nome,
+                (SELECT u2.foto_perfil 
+                 FROM participantes_conversa pc2 
+                 JOIN usuarios u2 ON pc2.usuario_id = u2.id 
+                 WHERE pc2.conversa_id = c.id 
+                 AND pc2.usuario_id != ? 
+                 LIMIT 1) as outro_usuario_foto,
+                (SELECT m.conteudo 
+                 FROM mensagens m 
+                 WHERE m.conversa_id = c.id 
+                 ORDER BY m.criado_em DESC 
+                 LIMIT 1) as ultima_mensagem,
+                (SELECT m.criado_em 
+                 FROM mensagens m 
+                 WHERE m.conversa_id = c.id 
+                 ORDER BY m.criado_em DESC 
+                 LIMIT 1) as ultima_mensagem_hora,
+                (SELECT COUNT(*) 
+                 FROM mensagens m 
+                 WHERE m.conversa_id = c.id 
+                 AND m.remetente_id != ? 
+                 AND m.lida = FALSE) as nao_lidas
+            FROM conversas c
+            INNER JOIN participantes_conversa pc ON c.id = pc.conversa_id
+            WHERE pc.usuario_id = ?
+            ORDER BY c.atualizado_em DESC
+        `, [usuarioId, usuarioId, usuarioId, usuarioId, usuarioId]);
+        
+        res.json(conversas);
+    } catch (error) {
+        console.error('Erro ao buscar conversas:', error);
+        res.status(500).json({ error: 'Erro ao buscar conversas' });
+    }
+});
+
+// POST - Criar nova conversa
+app.post('/api/conversas', async (req, res) => {
+    try {
+        const { usuario1_id, usuario2_id, tipo = 'privada' } = req.body;
+        
+        // Verificar se já existe conversa entre esses usuários
+        const [conversaExistente] = await db.execute(`
+            SELECT c.id 
+            FROM conversas c
+            INNER JOIN participantes_conversa pc1 ON c.id = pc1.conversa_id
+            INNER JOIN participantes_conversa pc2 ON c.id = pc2.conversa_id
+            WHERE pc1.usuario_id = ? 
+            AND pc2.usuario_id = ?
+            AND c.tipo = 'privada'
+            LIMIT 1
+        `, [usuario1_id, usuario2_id]);
+        
+        if (conversaExistente.length > 0) {
+            return res.json({ id: conversaExistente[0].id, mensagem: 'Conversa já existe' });
+        }
+        
+        // Criar nova conversa
+        const [result] = await db.execute(
+            'INSERT INTO conversas (tipo, criado_em, atualizado_em) VALUES (?, NOW(), NOW())',
+            [tipo]
+        );
+        
+        const conversaId = result.insertId;
+        
+        // Adicionar participantes
+        await db.execute(
+            'INSERT INTO participantes_conversa (conversa_id, usuario_id) VALUES (?, ?), (?, ?)',
+            [conversaId, usuario1_id, conversaId, usuario2_id]
+        );
+        
+        res.status(201).json({ id: conversaId, mensagem: 'Conversa criada com sucesso' });
+    } catch (error) {
+        console.error('Erro ao criar conversa:', error);
+        res.status(500).json({ error: 'Erro ao criar conversa' });
+    }
+});
+
+// GET - Buscar mensagens de uma conversa
+app.get('/api/mensagens/:conversaId', async (req, res) => {
+    try {
+        const { conversaId } = req.params;
+        const limit = parseInt(req.query.limit) || 50;
+        const offset = parseInt(req.query.offset) || 0;
+        
+        const [mensagens] = await db.execute(`
+            SELECT 
+                m.id,
+                m.conversa_id,
+                m.remetente_id,
+                u.nome as remetente_nome,
+                u.foto_perfil as remetente_foto,
+                m.conteudo,
+                m.lida,
+                m.criado_em
+            FROM mensagens m
+            INNER JOIN usuarios u ON m.remetente_id = u.id
+            WHERE m.conversa_id = ?
+            ORDER BY m.criado_em ASC
+            LIMIT ? OFFSET ?
+        `, [conversaId, limit, offset]);
+        
+        res.json(mensagens);
+    } catch (error) {
+        console.error('Erro ao buscar mensagens:', error);
+        res.status(500).json({ error: 'Erro ao buscar mensagens' });
+    }
+});
+
+// POST - Enviar mensagem
+app.post('/api/mensagens', async (req, res) => {
+    try {
+        const { conversa_id, remetente_id, conteudo } = req.body;
+        
+        if (!conversa_id || !remetente_id || !conteudo) {
+            return res.status(400).json({ error: 'Dados incompletos' });
+        }
+        
+        // Inserir mensagem
+        const [result] = await db.execute(
+            'INSERT INTO mensagens (conversa_id, remetente_id, conteudo, lida, criado_em) VALUES (?, ?, ?, FALSE, NOW())',
+            [conversa_id, remetente_id, conteudo]
+        );
+        
+        // Atualizar timestamp da conversa
+        await db.execute(
+            'UPDATE conversas SET atualizado_em = NOW() WHERE id = ?',
+            [conversa_id]
+        );
+        
+        // Buscar dados completos da mensagem
+        const [mensagem] = await db.execute(`
+            SELECT 
+                m.id,
+                m.conversa_id,
+                m.remetente_id,
+                u.nome as remetente_nome,
+                u.foto_perfil as remetente_foto,
+                m.conteudo,
+                m.lida,
+                m.criado_em
+            FROM mensagens m
+            INNER JOIN usuarios u ON m.remetente_id = u.id
+            WHERE m.id = ?
+        `, [result.insertId]);
+        
+        res.status(201).json(mensagem[0]);
+    } catch (error) {
+        console.error('Erro ao enviar mensagem:', error);
+        res.status(500).json({ error: 'Erro ao enviar mensagem' });
+    }
+});
+
+// PUT - Marcar mensagens como lidas
+app.put('/api/mensagens/marcar-lidas/:conversaId/:usuarioId', async (req, res) => {
+    try {
+        const { conversaId, usuarioId } = req.params;
+        
+        await db.execute(
+            'UPDATE mensagens SET lida = TRUE WHERE conversa_id = ? AND remetente_id != ?',
+            [conversaId, usuarioId]
+        );
+        
+        res.json({ mensagem: 'Mensagens marcadas como lidas' });
+    } catch (error) {
+        console.error('Erro ao marcar mensagens como lidas:', error);
+        res.status(500).json({ error: 'Erro ao marcar mensagens como lidas' });
+    }
+});
+
+// ================================
+// SOCKET.IO PARA CHAT EM TEMPO REAL
+// ================================
+
+io.on('connection', (socket) => {
+    console.log(`✅ Socket conectado: ${socket.id}`);
+
+    // Entrar em uma sala (conversa)
+    socket.on('join-room', (conversaId) => {
+        socket.join(`conversa-${conversaId}`);
+        console.log(`Socket ${socket.id} entrou na conversa ${conversaId}`);
+    });
+
+    // Enviar mensagem
+    socket.on('send-message', (data) => {
+        io.to(`conversa-${data.conversaId}`).emit('new-message', data);
+    });
+
+    // Usuário está digitando
+    socket.on('typing', (data) => {
+        socket.to(`conversa-${data.conversaId}`).emit('user-typing', data);
+    });
+
+    // Desconexão
+    socket.on('disconnect', () => {
+        console.log(`❌ Socket desconectado: ${socket.id}`);
+    });
+
+    
+});
+
+// ================================
+// INICIAR SERVIDOR
+// ================================
+
+server.listen(PORT, '127.0.0.1', () => {
+    console.log(` Servidor rodando na porta ${PORT}`);
+    console.log(` Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(` Acesse: http://127.0.0.1:${PORT}`);
+    console.log(` Teste: http://127.0.0.1:${PORT}/api/test`);
+    console.log(` Socket.IO ativo para chat em tempo real`);
 });

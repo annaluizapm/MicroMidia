@@ -45,9 +45,9 @@ body {
 img {
     max-width: 120%;
     height: auto;
-    border-radius: 15px;
+    border-radius: 0;
     transition: transform 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 img:hover {

@@ -1,11 +1,16 @@
 // ===== CONFIGURAÇÃO =====
-const API_BASE_URL = window.API_BASE_URL || 'http://127.0.0.1:3002/api';
+// API_BASE_URL já está declarado no script.js
+const SOCKET_URL = 'http://127.0.0.1:3002';
+
+// ===== SOCKET.IO =====
+let socket = null;
 
 // ===== ESTADO GLOBAL =====
 let conversaAtual = null;
 let usuarioLogado = null;
 let conversas = [];
 let usuarios = [];
+let mensagensAtivas = [];
 
 // ===== INICIALIZAÇÃO =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,12 +21,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Conectar ao Socket.IO
+    conectarSocket();
+    
     // Inicializar event listeners
     inicializarEventListeners();
     
     // Carregar conversas
     carregarConversas();
 });
+
+// ===== SOCKET.IO =====
+function conectarSocket() {
+    socket = io(SOCKET_URL);
+    
+    socket.on('connect', () => {
+        console.log('✅ Socket conectado:', socket.id);
+    });
+    
+    socket.on('disconnect', () => {
+        console.log('❌ Socket desconectado');
+    });
+    
+    // Receber nova mensagem
+    socket.on('new-message', (data) => {
+        console.log('📨 Nova mensagem recebida:', data);
+        adicionarMensagemNaLista(data);
+    });
+    
+    // Usuário digitando
+    socket.on('user-typing', (data) => {
+        mostrarDigitando(data);
+    });
+}
 
 // ===== EVENT LISTENERS =====
 function inicializarEventListeners() {
@@ -72,8 +104,10 @@ function inicializarEventListeners() {
 // ===== CARREGAR CONVERSAS =====
 async function carregarConversas() {
     try {
-        // Por enquanto, criar conversas mock (implementar endpoint depois)
-        conversas = [];
+        const response = await fetch(`${API_BASE_URL}/conversas/${usuarioLogado.id}`);
+        if (!response.ok) throw new Error('Erro ao buscar conversas');
+        
+        conversas = await response.json();
         
         const listaEl = document.getElementById('conversas-lista');
         if (conversas.length === 0) {
@@ -95,9 +129,10 @@ async function carregarConversas() {
 // ===== RENDERIZAR CONVERSAS =====
 function renderizarConversas(filtro = '') {
     const listaEl = document.getElementById('conversas-lista');
-    const conversasFiltradas = conversas.filter(c => 
-        c.nome.toLowerCase().includes(filtro.toLowerCase())
-    );
+    const conversasFiltradas = conversas.filter(c => {
+        const nome = c.nome || c.outro_usuario_nome || '';
+        return nome.toLowerCase().includes(filtro.toLowerCase());
+    });
     
     if (conversasFiltradas.length === 0) {
         listaEl.innerHTML = `
@@ -108,28 +143,39 @@ function renderizarConversas(filtro = '') {
         return;
     }
     
-    listaEl.innerHTML = conversasFiltradas.map(conversa => `
-        <div class="conversa-item ${conversa.id === conversaAtual?.id ? 'active' : ''}" 
-             onclick="selecionarConversa(${conversa.id})">
-            <div class="conversa-avatar">
-                ${conversa.foto ? `<img src="${conversa.foto}" alt="${conversa.nome}">` : '👤'}
-            </div>
-            <div class="conversa-conteudo">
-                <div class="conversa-nome-hora">
-                    <h4>${conversa.nome}</h4>
-                    <span class="conversa-hora">${formatarHora(conversa.ultima_mensagem_hora)}</span>
+    listaEl.innerHTML = conversasFiltradas.map(conversa => {
+        const nome = conversa.tipo === 'privada' ? conversa.outro_usuario_nome : conversa.nome;
+        const foto = conversa.outro_usuario_foto;
+        
+        return `
+            <div class="conversa-item ${conversa.id === conversaAtual?.id ? 'active' : ''}" 
+                 onclick="selecionarConversa(${conversa.id})">
+                <div class="conversa-avatar">
+                    ${foto ? `<img src="${foto}" alt="${nome}">` : '👤'}
                 </div>
-                <p class="conversa-preview">${conversa.ultima_mensagem || 'Sem mensagens'}</p>
+                <div class="conversa-conteudo">
+                    <div class="conversa-nome-hora">
+                        <h4>${nome}</h4>
+                        <span class="conversa-hora">${formatarHora(conversa.ultima_mensagem_hora)}</span>
+                    </div>
+                    <p class="conversa-preview">${conversa.ultima_mensagem || 'Sem mensagens'}</p>
+                </div>
+                ${conversa.nao_lidas > 0 ? `<div class="conversa-badge">${conversa.nao_lidas}</div>` : ''}
             </div>
-            ${conversa.nao_lidas > 0 ? `<div class="conversa-badge">${conversa.nao_lidas}</div>` : ''}
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ===== SELECIONAR CONVERSA =====
 async function selecionarConversa(conversaId) {
     conversaAtual = conversas.find(c => c.id === conversaId);
     if (!conversaAtual) return;
+    
+    // Entrar na sala do Socket.IO
+    if (socket && socket.connected) {
+        socket.emit('join-room', conversaId);
+        console.log(`📥 Entrou na conversa ${conversaId}`);
+    }
     
     // Atualizar UI
     renderizarConversas();
@@ -141,26 +187,49 @@ async function selecionarConversa(conversaId) {
     document.getElementById('mensagem-input-container')?.style.setProperty('display', 'block');
     
     // Atualizar cabeçalho da conversa
-    document.getElementById('conversa-nome').textContent = conversaAtual.nome;
+    const nome = conversaAtual.tipo === 'privada' ? conversaAtual.outro_usuario_nome : conversaAtual.nome;
+    const foto = conversaAtual.outro_usuario_foto;
+    
+    document.getElementById('conversa-nome').textContent = nome;
     const avatarEl = document.getElementById('conversa-avatar');
-    avatarEl.innerHTML = conversaAtual.foto ? 
-        `<img src="${conversaAtual.foto}" alt="${conversaAtual.nome}">` : 
-        '👤';
+    avatarEl.innerHTML = foto ? `<img src="${foto}" alt="${nome}">` : '👤';
     
     // Carregar mensagens
     await carregarMensagens(conversaId);
+    
+    // Marcar mensagens como lidas
+    await marcarMensagensComoLidas(conversaId);
 }
 
 // ===== CARREGAR MENSAGENS =====
 async function carregarMensagens(conversaId) {
     try {
-        // Mock de mensagens (implementar endpoint depois)
-        const mensagens = [];
+        const response = await fetch(`${API_BASE_URL}/mensagens/${conversaId}`);
+        if (!response.ok) throw new Error('Erro ao buscar mensagens');
         
-        renderizarMensagens(mensagens);
+        mensagensAtivas = await response.json();
+        renderizarMensagens(mensagensAtivas);
     } catch (error) {
         console.error('Erro ao carregar mensagens:', error);
         mostrarMensagem('Erro ao carregar mensagens', 'erro');
+    }
+}
+
+// ===== MARCAR MENSAGENS COMO LIDAS =====
+async function marcarMensagensComoLidas(conversaId) {
+    try {
+        await fetch(`${API_BASE_URL}/mensagens/marcar-lidas/${conversaId}/${usuarioLogado.id}`, {
+            method: 'PUT'
+        });
+        
+        // Atualizar contador de não lidas
+        const conversa = conversas.find(c => c.id === conversaId);
+        if (conversa) {
+            conversa.nao_lidas = 0;
+            renderizarConversas();
+        }
+    } catch (error) {
+        console.error('Erro ao marcar mensagens como lidas:', error);
     }
 }
 
@@ -206,25 +275,39 @@ async function enviarMensagem(event) {
     if (!conteudo || !conversaAtual) return;
     
     try {
-        // Por enquanto, adicionar localmente (implementar endpoint depois)
-        const novaMensagem = {
-            id: Date.now(),
-            conversa_id: conversaAtual.id,
-            remetente_id: usuarioLogado.id,
-            remetente_nome: usuarioLogado.nome,
-            conteudo: conteudo,
-            criado_em: new Date().toISOString(),
-            lida: false
-        };
+        // Enviar para o banco de dados
+        const response = await fetch(`${API_BASE_URL}/mensagens`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                conversa_id: conversaAtual.id,
+                remetente_id: usuarioLogado.id,
+                conteudo: conteudo
+            })
+        });
         
-        // Adicionar à lista
-        const mensagensAtuais = []; // buscar do estado
-        mensagensAtuais.push(novaMensagem);
-        renderizarMensagens(mensagensAtuais);
+        if (!response.ok) throw new Error('Erro ao enviar mensagem');
+        
+        const novaMensagem = await response.json();
+        
+        // Enviar via Socket.IO para tempo real
+        if (socket && socket.connected) {
+            socket.emit('send-message', {
+                conversaId: conversaAtual.id,
+                ...novaMensagem
+            });
+        }
+        
+        // Adicionar localmente
+        adicionarMensagemNaLista(novaMensagem);
         
         // Atualizar conversa
         conversaAtual.ultima_mensagem = conteudo;
-        conversaAtual.ultima_mensagem_hora = new Date().toISOString();
+        conversaAtual.ultima_mensagem_hora = novaMensagem.criado_em;
+        
+        // Reordenar conversas (mover para o topo)
+        conversas = conversas.filter(c => c.id !== conversaAtual.id);
+        conversas.unshift(conversaAtual);
         renderizarConversas();
         
         // Limpar textarea
@@ -232,11 +315,29 @@ async function enviarMensagem(event) {
         textarea.style.height = 'auto';
         textarea.focus();
         
-        console.log('✅ Mensagem enviada:', novaMensagem);
+        console.log('✅ Mensagem enviada e salva no banco');
+        
     } catch (error) {
         console.error('Erro ao enviar mensagem:', error);
         mostrarMensagem('Erro ao enviar mensagem', 'erro');
     }
+}
+
+// ===== ADICIONAR MENSAGEM NA LISTA =====
+function adicionarMensagemNaLista(mensagem) {
+    // Evitar duplicatas
+    if (mensagensAtivas.some(m => m.id === mensagem.id)) {
+        return;
+    }
+    
+    mensagensAtivas.push(mensagem);
+    renderizarMensagens(mensagensAtivas);
+}
+
+// ===== MOSTRAR DIGITANDO =====
+function mostrarDigitando(data) {
+    // Implementar indicador de digitando
+    console.log('⌨️ Usuário digitando:', data);
 }
 
 // ===== MODAL NOVA CONVERSA =====
@@ -300,27 +401,27 @@ async function iniciarConversa(usuarioId) {
         const usuario = usuarios.find(u => u.id === usuarioId);
         if (!usuario) return;
         
-        // Verificar se já existe conversa com esse usuário
-        let conversa = conversas.find(c => c.usuario_id === usuarioId);
+        // Criar ou buscar conversa existente
+        const response = await fetch(`${API_BASE_URL}/conversas`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                usuario1_id: usuarioLogado.id,
+                usuario2_id: usuarioId,
+                tipo: 'privada'
+            })
+        });
         
-        if (!conversa) {
-            // Criar nova conversa (mock - implementar endpoint depois)
-            conversa = {
-                id: Date.now(),
-                tipo: 'privada',
-                usuario_id: usuarioId,
-                nome: usuario.nome,
-                foto: usuario.foto_perfil,
-                ultima_mensagem: '',
-                ultima_mensagem_hora: new Date().toISOString(),
-                nao_lidas: 0
-            };
-            
-            conversas.unshift(conversa);
-        }
+        if (!response.ok) throw new Error('Erro ao criar conversa');
         
+        const data = await response.json();
+        
+        // Recarregar conversas
+        await carregarConversas();
+        
+        // Selecionar a conversa criada/encontrada
         fecharModal();
-        selecionarConversa(conversa.id);
+        selecionarConversa(data.id);
         
     } catch (error) {
         console.error('Erro ao iniciar conversa:', error);

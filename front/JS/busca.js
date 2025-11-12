@@ -15,6 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const termoInput = document.getElementById('termo-busca');
     if(termoInput) termoInput.addEventListener('input', handleBuscaTempoReal);
     
+    // Adicionar event listeners nas tags de busca rápida
+    const tagsBusca = document.querySelectorAll('.tag-busca');
+    tagsBusca.forEach(tag => {
+        tag.addEventListener('click', function() {
+            const termo = this.getAttribute('data-termo');
+            buscarRapida(termo);
+        });
+    });
 });
 
 // Cria um pequeno banner no topo da página com informações de debug e um botão

@@ -40,16 +40,27 @@ MicroMidia/
 │   │   ├── index.html     # Página inicial
 │   │   ├── login.html     # Login de usuários
 │   │   ├── cadastro.html  # Cadastro de usuários
-│   │   ├── forum.html     # Fórum principal
+│   │   ├── feed.html      # Feed/Fórum de postagens
+│   │   ├── busca.html     # Busca de conteúdo
+│   │   ├── usuarios.html  # Listagem de usuários
 │   │   ├── perfil.html    # Perfil do usuário
-│   │   └── formulario.html # Diagnóstico de marketing
+│   │   ├── formulario.html # Diagnóstico de marketing
+│   │   └── chat.html      # Chat entre usuários
 │   ├── CSS/               # Estilos
 │   │   ├── style.css      # Estilos principais
-│   │   ├── forum.css      # Estilos do fórum
-│   │   └── ...
+│   │   ├── feed.css       # Estilos do feed
+│   │   ├── perfil.css     # Estilos do perfil
+│   │   ├── usuarios.css   # Estilos da página de usuários
+│   │   ├── busca.css      # Estilos da busca
+│   │   ├── chat.css       # Estilos do chat
+│   │   ├── formulario.css # Estilos do formulário
+│   │   └── logincadastro.css # Estilos de login/cadastro
 │   ├── JS/                # Scripts JavaScript
 │   │   ├── script.js      # Funcionalidades principais
-│   │   └── perfil.js      # Funcionalidades do perfil
+│   │   ├── perfil.js      # Funcionalidades do perfil
+│   │   ├── header.js      # Funcionalidades compartilhadas do header
+│   │   ├── formulario.js  # Funcionalidades do diagnóstico
+│   │   └── debug.js       # Utilitários de debug
 │   └── assets/            # Recursos estáticos
 │       └── Logo.png       # Logo da aplicação
 ├── uploads/               # Arquivos de upload (criado automaticamente)

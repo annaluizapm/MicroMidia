@@ -9,16 +9,91 @@
 body{
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
-    padding: 30px 20px;
+    padding: 0;
+    margin: 0;
+}
+
+/* Header */
+header {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.logo img {
+    height: 80px;
+    transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+    transform: scale(1.05);
+}
+
+.navigation {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-link {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.nav-link:hover {
+    background: #f0f0f0;
+}
+
+.nav-link.active {
+    background: linear-gradient(135deg, #D90429 0%, #ff6b8a 100%);
+    color: white;
+}
+
+.btn-logout {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+#user-name-display {
+    font-weight: 600;
+    color: #333;
 }
 
 .busca-container {
     max-width: 900px;
-    margin: 40px auto;
-    padding: 24px;
+    margin: 20px auto;
+    padding: 30px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    min-height: calc(100vh - 180px);
 }
         
          .busca-header {

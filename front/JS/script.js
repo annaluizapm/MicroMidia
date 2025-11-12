@@ -576,6 +576,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 2000);
         }
     }
+    
+    // Se estiver na página de feed, carregar postagens
+    const currentPage = window.location.pathname;
+    if (currentPage.includes('feed.html')) {
+        listarPostagens();
+    }
 });
 
 // Formulário de cadastro (DESABILITADO - usar handleCadastroCorrigido)
@@ -789,13 +795,8 @@ function handleNovaPostagem() {
     setTimeout(() => document.getElementById('postagem-conteudo').focus(), 100);
 }
 
-// Adicionar configuração dos formulários ao DOMContentLoaded existente
+// Adicionar botão de nova postagem e configurar formulários
 document.addEventListener('DOMContentLoaded', function() {
-    // Se estiver na página do fórum, carregar postagens
-    if (window.location.pathname.includes('forum')) {
-        listarPostagens();
-    }
-    
     // Adicionar botão de nova postagem se não existir
     const container = document.querySelector('.content');
     if (container && !document.querySelector('.btn-nova-postagem')) {

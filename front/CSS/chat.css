@@ -9,40 +9,119 @@ body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header Global */
+body > header {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    z-index: 1000;
+}
+
+body > header .logo img {
+    height: 80px;
+    transition: transform 0.3s ease;
+}
+
+body > header .logo img:hover {
+    transform: scale(1.05);
+}
+
+.navigation {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-link {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.nav-link:hover {
+    background: #f0f0f0;
+}
+
+.nav-link.active {
+    background: linear-gradient(135deg, #D90429 0%, #ff6b8a 100%);
+    color: white;
+}
+
+.btn-logout {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+body > header #user-name-display {
+    font-weight: 600;
+    color: #333;
 }
 
 .chat-container {
-    height: 100vh;
+    max-width: 900px;
+    margin: 20px auto;
+    height: calc(100vh - 180px);
     display: flex;
     flex-direction: column;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
-/* ===== CABEÇALHO ===== */
+/* ===== CABEÇALHO DO CHAT ===== */
 .chat-header {
-    background: white;
+    background: #f8f9fa;
     padding: 15px 25px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 100;
+    border-bottom: 2px solid #e9ecef;
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    gap: 20px;
-}
-
-.header-logo {
-    height: 40px;
-    width: auto;
+    gap: 15px;
 }
 
 .chat-header h1 {
-    font-size: 24px;
+    font-size: 20px;
     color: #D90429;
     font-weight: 700;
+    margin: 0;
 }
 
 .header-right {

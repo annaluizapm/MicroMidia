@@ -7,17 +7,33 @@
     <link rel="stylesheet" href="../CSS/chat.css">
 </head>
 <body>
+    <header>
+        <div class="logo">
+            <img src="../assets/Logo.png" alt="MicroMídia">
+        </div>
+        <nav class="navigation">
+            <a href="feed.html" class="nav-link">📋 Feed</a>
+            <a href="busca.html" class="nav-link">🔍 Buscar</a>
+            <a href="usuarios.html" class="nav-link">👥 Usuários</a>
+            <a href="perfil.html" class="nav-link">👤 Perfil</a>
+            <a href="formulario.html" class="nav-link">📊 Diagnóstico</a>
+            <a href="chat.html" class="nav-link active">💬 Chat</a>
+        </nav>
+        <div class="user-info">
+            <span class="user-name" id="user-name-display">Carregando...</span>
+            <button class="btn-logout" title="Sair">🚪 Logout</button>
+        </div>
+    </header>
+    
     <div class="chat-container">
         <!-- Cabeçalho -->
         <header class="chat-header">
             <div class="header-left">
-                <a href="feed.html" class="btn-voltar">← Voltar ao Feed</a>
-                <img src="../assets/Logo.png" alt="MicroMídia" class="header-logo">
                 <h1>💬 Chat</h1>
             </div>
             <div class="header-right">
                 <button class="btn-nova-conversa" id="btn-nova-conversa">+ Nova Conversa</button>
-                <a href="perfil.html" class="btn-perfil">👤 Perfil</a>
+        
             </div>
         </header>
 
@@ -105,6 +121,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="../JS/header.js"></script>
     <script src="../JS/script.js"></script>
     <script src="../JS/chat.js"></script>
 </body>

@@ -3,12 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar - Micro Mídia</title>
+    <title>Buscar - MicroMídia</title>
     <link rel="stylesheet" href="../CSS/busca.css">
    
 </head>
 <body>
-    <a href="feed.html" class="voltar-btn">← Voltar ao Feed</a>
+    <header>
+        <div class="logo">
+            <img src="../assets/Logo.png" alt="MicroMídia">
+        </div>
+        <nav class="navigation">
+            <a href="feed.html" class="nav-link">📋 Feed</a>
+            <a href="busca.html" class="nav-link active">🔍 Buscar</a>
+            <a href="usuarios.html" class="nav-link">👥 Usuários</a>
+            <a href="perfil.html" class="nav-link">👤 Perfil</a>
+            <a href="formulario.html" class="nav-link">📊 Diagnóstico</a>
+            <a href="chat.html" class="nav-link">💬 Chat</a>
+        </nav>
+        <div class="user-info">
+            <span class="user-name" id="user-name-display">Carregando...</span>
+            <button class="btn-logout" title="Sair">🚪 Logout</button>
+        </div>
+    </header>
     
     <div class="busca-container">
         <div class="busca-header">
@@ -17,10 +33,10 @@
         </div>
         
         <div class="busca-rapida">
-            <div class="tag-busca" onclick="buscarRapida('dica')">💡 Dicas</div>
-            <div class="tag-busca" onclick="buscarRapida('ajuda')">🆘 Ajuda</div>
-            <div class="tag-busca" onclick="buscarRapida('negócio')">💼 Negócios</div>
-            <div class="tag-busca" onclick="buscarRapida('marketing')">📈 Marketing</div>
+            <div class="tag-busca" data-termo="dica">💡 Dicas</div>
+            <div class="tag-busca" data-termo="ajuda">🆘 Ajuda</div>
+            <div class="tag-busca" data-termo="negócio">💼 Negócios</div>
+            <div class="tag-busca" data-termo="marketing">📈 Marketing</div>
         </div>
         
         <form class="busca-form" id="busca-form">
@@ -49,6 +65,7 @@
         </div>
     </div>
     
+    <script src="../JS/header.js"></script>
     <script src="../JS/busca.js"></script>
    
 </body>
