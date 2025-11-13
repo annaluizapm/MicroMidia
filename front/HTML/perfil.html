@@ -12,16 +12,17 @@
             <img src="../assets/Logo.png" alt="MicroMídia">
         </div>
         <nav class="navigation">
-            <a href="feed.html" class="nav-link">📋 Feed</a>
-            <a href="busca.html" class="nav-link">🔍 Buscar</a>
-            <a href="usuarios.html" class="nav-link">👥 Usuários</a>
-            <a href="perfil.html" class="nav-link active">👤 Perfil</a>
-            <a href="formulario.html" class="nav-link">📊 Diagnóstico</a>
-            <a href="chat.html" class="nav-link">💬 Chat</a>
+            <a href="feed.html" class="nav-link"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
+            <a href="busca.html" class="nav-link"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="perfil.html" class="nav-link active"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
+            <a href="formulario.html" class="nav-link"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
+            <a href="admin.html" class="nav-link" id="admin-link" style="display: none;"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
+            <a href="chat.html" class="nav-link"><img src="../assets/icone-chat.png" alt="Chat" style="width: 16px; height: 16px; vertical-align: middle;"> Chat</a>
         </nav>
         <div class="user-info">
             <span class="user-name" id="user-name-display">Carregando...</span>
-            <button class="btn-logout" title="Sair">🚪 Logout</button>
+            <button class="btn-logout" title="Sair">Logout</button>
         </div>
     </header>
     
@@ -30,7 +31,7 @@
         <div class="perfil-sidebar">
             <div class="perfil-header">
                 <div class="foto-placeholder" id="foto-container">
-                    👤
+                    <img src="../assets/perfil-de-usuario.png" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 </div>
                 <input type="file" id="input-foto" accept="image/*" style="display: none;">
                 <h2 id="nome-usuario">Carregando...</h2>
@@ -54,7 +55,7 @@
             
             <!-- Botão de Logout -->
             <div style="margin-top: 20px; text-align: center;">
-                <button class="btn-logout-perfil">🚪 Fazer Logout</button>
+                <button class="btn-logout-perfil">Fazer Logout</button>
             </div>
         </div>
         
@@ -62,7 +63,7 @@
         <div class="perfil-content">
             <form class="perfil-form" id="perfil-form">
                 <!-- Informações Pessoais -->
-                <h3 style="color: #333; border-bottom: 2px solid #D90429; padding-bottom: 10px; margin-bottom: 15px;">👤 Informações Pessoais</h3>
+                <h3 style="color: #333; border-bottom: 2px solid #D90429; padding-bottom: 10px; margin-bottom: 15px;">Informações Pessoais</h3>
                 
                 <div class="form-group">
                     <label for="nome">Nome:</label>
@@ -80,7 +81,7 @@
                 </div>
                 
                 <!-- Informações do Negócio -->
-                <h3 style="color: #333; border-bottom: 2px solid #D90429; padding-bottom: 10px; margin-bottom: 15px; margin-top: 30px;">🏢 Informações do Negócio</h3>
+                <h3 style="color: #333; border-bottom: 2px solid #D90429; padding-bottom: 10px; margin-bottom: 15px; margin-top: 30px;">Informações do Negócio</h3>
                 
                 <div class="form-group">
                     <label for="empresa">Nome da Empresa:</label>
@@ -118,11 +119,11 @@
                     <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/seu-perfil">
                 </div>
                 
-                <button type="submit" class="btn-salvar">💾 Salvar Alterações</button>
+                <button type="submit" class="btn-salvar">Salvar Alterações</button>
             </form>
             
             <div class="minhas-postagens">
-                <h3>📝 Minhas Postagens</h3>
+                <h3>Minhas Postagens</h3>
                 <div id="lista-postagens">
                     <p style="text-align: center; color: #666; padding: 20px;">Carregando suas postagens...</p>
                 </div>

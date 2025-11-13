@@ -7,7 +7,12 @@ const db = require('./db_config');
 
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 
 const PORT = process.env.PORT || 3002;
 
@@ -71,6 +76,29 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'front', 'HTML', 'index.html'));
 });
 
+// ================================
+// MIDDLEWARE DE VERIFICAÇÃO DE ADMIN
+// ================================
+async function verificarAdmin(req, res, next) {
+    try {
+        const usuarioId = req.body.usuarioId || req.query.usuarioId || req.headers['x-usuario-id'];
+        
+        if (!usuarioId) {
+            return res.status(401).json({ erro: 'Usuário não autenticado. Forneça usuarioId.' });
+        }
+        
+        const [users] = await db.execute('SELECT tipo FROM usuarios WHERE id = ?', [usuarioId]);
+        
+        if (users.length === 0 || users[0].tipo !== 'admin') {
+            return res.status(403).json({ erro: 'Acesso negado. Apenas administradores podem realizar esta ação.' });
+        }
+        
+        next();
+    } catch (error) {
+        console.error('Erro ao verificar admin:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+}
 
 
 // CRUD USUÁRIOS
@@ -79,10 +107,54 @@ app.get('/', (req, res) => {
 // GET - Listar todos os usuários
 app.get('/api/usuarios', async (req, res) => {
     try {
-        const [users] = await db.execute('SELECT id, nome, email, criado_em FROM usuarios ORDER BY criado_em DESC');
+        const [users] = await db.execute('SELECT id, nome, email, bio, foto_perfil, tipo, banido, criado_em FROM usuarios ORDER BY criado_em DESC');
         res.json(users);
     } catch (error) {
         console.error('Erro ao buscar usuários:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+// POST - Login de usuário
+app.post('/api/login', async (req, res) => {
+    try {
+        const { email, senha } = req.body;
+        
+        if (!email || !senha) {
+            return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+        }
+
+        // Buscar usuário com senha
+        const [users] = await db.execute(
+            'SELECT id, nome, email, senha, bio, foto_perfil, tipo, banido, criado_em FROM usuarios WHERE email = ?',
+            [email]
+        );
+
+        if (users.length === 0) {
+            return res.status(401).json({ error: 'Email ou senha incorretos' });
+        }
+
+        const usuario = users[0];
+
+        // Verificar senha (em produção, use bcrypt!)
+        if (usuario.senha !== senha) {
+            return res.status(401).json({ error: 'Email ou senha incorretos' });
+        }
+
+        // Verificar se o usuário está banido
+        if (usuario.banido) {
+            return res.status(403).json({ error: 'Sua conta foi suspensa. Entre em contato com o suporte.' });
+        }
+
+        // Remover senha antes de retornar
+        const { senha: _, ...usuarioSemSenha } = usuario;
+
+        res.json({
+            success: true,
+            usuario: usuarioSemSenha
+        });
+    } catch (error) {
+        console.error('Erro no login:', error);
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
@@ -93,7 +165,7 @@ app.get('/api/usuarios/:id', async (req, res) => {
         const { id } = req.params;
         const [users] = await db.execute(
             `SELECT 
-                id, nome, email, bio, foto_perfil, 
+                id, nome, email, bio, foto_perfil, tipo,
                 empresa, segmento, cargo, 
                 site_empresa, linkedin, 
                 criado_em 
@@ -115,46 +187,46 @@ app.get('/api/usuarios/:id', async (req, res) => {
 // POST - Criar novo usuário
 app.post('/api/usuarios', async (req, res) => {
     try {
-        console.log('👤 Recebendo dados para criar usuário:', req.body);
+        console.log('Recebendo dados para criar usuário:', req.body);
         const { nome, email, senha, bio, foto_perfil, empresa, segmento, cargo } = req.body;
         
         if (!nome || !email || !senha) {
-            console.log('❌ Dados obrigatórios faltando');
+            console.log('Dados obrigatórios faltando');
             return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
         }
 
-        console.log('🔍 Verificando se email já existe...');
+        console.log('Verificando se email já existe...');
         // Verificar se email já existe
         const [existing] = await db.execute('SELECT id FROM usuarios WHERE email = ?', [email]);
         if (existing.length > 0) {
-            console.log('❌ Email já cadastrado:', email);
+            console.log('Email já cadastrado:', email);
             return res.status(400).json({ error: 'Email já cadastrado' });
         }
 
-        console.log('📊 Inserindo novo usuário...');
+        console.log('Inserindo novo usuário...');
         const [result] = await db.execute(
             'INSERT INTO usuarios (nome, email, senha, bio, foto_perfil, empresa, segmento, cargo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [nome, email, senha, bio || null, foto_perfil || null, empresa || null, segmento || null, cargo || null]
         );
 
-        console.log('✅ Usuário inserido com ID:', result.insertId);
+        console.log('Usuário inserido com ID:', result.insertId);
         
         // Buscar o usuário recém-criado
         const [newUser] = await db.execute(
             `SELECT 
-                id, nome, email, bio, foto_perfil, 
+                id, nome, email, bio, foto_perfil, tipo,
                 empresa, segmento, cargo, 
                 site_empresa, linkedin, 
                 criado_em 
             FROM usuarios WHERE id = ?`, 
             [result.insertId]
         );
-        console.log('📋 Usuário criado:', newUser[0]);
+        console.log('Usuário criado:', newUser[0]);
         
         res.status(201).json({ message: 'Usuário criado com sucesso!', usuario: newUser[0] });
     } catch (error) {
-        console.error('❌ Erro ao criar usuário:', error.message);
-        console.error('📋 Stack trace:', error.stack);
+        console.error('Erro ao criar usuário:', error.message);
+        console.error('Stack trace:', error.stack);
         res.status(500).json({ error: 'Erro interno do servidor: ' + error.message });
     }
 });
@@ -346,6 +418,92 @@ app.put('/api/usuarios/:id', async (req, res) => {
     }
 });
 
+// PUT - Alterar tipo de usuário (admin only)
+app.put('/api/usuarios/:id/tipo', verificarAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tipo } = req.body;
+        
+        if (!['admin', 'usuario'].includes(tipo)) {
+            return res.status(400).json({ error: 'Tipo inválido. Use "admin" ou "usuario"' });
+        }
+        
+        const [result] = await db.execute(
+            'UPDATE usuarios SET tipo = ? WHERE id = ?',
+            [tipo, id]
+        );
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+        
+        res.json({ message: `Usuário alterado para ${tipo} com sucesso!` });
+    } catch (error) {
+        console.error('Erro ao alterar tipo de usuário:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+// PUT - Banir usuário (admin only)
+app.put('/api/usuarios/:id/banir', verificarAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const [result] = await db.execute(
+            'UPDATE usuarios SET banido = TRUE WHERE id = ?',
+            [id]
+        );
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+        
+        res.json({ message: 'Usuário banido com sucesso!' });
+    } catch (error) {
+        console.error('Erro ao banir usuário:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+// PUT - Desbanir usuário (admin only)
+app.put('/api/usuarios/:id/desbanir', verificarAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const [result] = await db.execute(
+            'UPDATE usuarios SET banido = FALSE WHERE id = ?',
+            [id]
+        );
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+        
+        res.json({ message: 'Usuário desbanido com sucesso!' });
+    } catch (error) {
+        console.error('Erro ao desbanir usuário:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+// DELETE - Deletar usuário (admin only)
+app.delete('/api/usuarios/:id', verificarAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const [result] = await db.execute('DELETE FROM usuarios WHERE id = ?', [id]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+        
+        res.json({ message: 'Usuário deletado com sucesso!' });
+    } catch (error) {
+        console.error('Erro ao deletar usuário:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
 // ================================
 // CRUD POSTAGENS
 // ================================
@@ -358,6 +516,7 @@ app.get('/api/postagens', async (req, res) => {
                 p.*,
                 u.nome as usuario_nome,
                 u.foto_perfil,
+                u.tipo as usuario_tipo,
                 (SELECT COUNT(*) FROM curtidas c WHERE c.postagem_id = p.id) as curtidas,
                 (SELECT COUNT(*) FROM comentarios cm WHERE cm.postagem_id = p.id) as comentarios
             FROM postagens p
@@ -373,31 +532,31 @@ app.get('/api/postagens', async (req, res) => {
 
 app.post('/api/postagens', async (req, res) => {
     try {
-        console.log('📝 Recebendo dados para criar postagem:', req.body);
+        console.log('Recebendo dados para criar postagem:', req.body);
         const { conteudo, usuario_id, categoria = 'Geral', tags = '' } = req.body;
         
         if (!conteudo || !usuario_id) {
-            console.log('❌ Dados obrigatórios faltando');
+            console.log('Dados obrigatórios faltando');
             return res.status(400).json({ error: 'Conteúdo e usuário são obrigatórios' });
         }
         
-        console.log('📊 Tentando inserir postagem...');
+        console.log('Tentando inserir postagem...');
         
         const [result] = await db.execute(
             'INSERT INTO postagens (conteudo, usuario_id, categoria, tags) VALUES (?, ?, ?, ?)', 
             [conteudo, usuario_id, categoria, tags]
         );
         
-        console.log('✅ Postagem inserida com ID:', result.insertId);
+        console.log('Postagem inserida com ID:', result.insertId);
         
         const [newPost] = await db.execute(`
-            SELECT p.*, u.nome as autor_nome, u.foto_perfil as autor_foto
+            SELECT p.*, u.nome as autor_nome, u.foto_perfil as autor_foto, u.tipo as usuario_tipo
             FROM postagens p
             LEFT JOIN usuarios u ON p.usuario_id = u.id
             WHERE p.id = ?
         `, [result.insertId]);
         
-        console.log('📋 Postagem criada:', newPost[0]);
+        console.log('Postagem criada:', newPost[0]);
         res.status(201).json({ message: 'Postagem criada com sucesso!', postagem: newPost[0] });
         
     } catch (error) {
@@ -411,10 +570,26 @@ app.post('/api/postagens', async (req, res) => {
 app.put('/api/postagens/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { conteudo } = req.body;
+        const { conteudo, usuarioId } = req.body;
         
         if (!conteudo) {
             return res.status(400).json({ error: 'Conteúdo é obrigatório' });
+        }
+        
+        if (!usuarioId) {
+            return res.status(401).json({ error: 'Usuário não autenticado' });
+        }
+        
+        // Verificar se a postagem existe e pertence ao usuário
+        const [postagens] = await db.execute('SELECT usuario_id FROM postagens WHERE id = ?', [id]);
+        
+        if (postagens.length === 0) {
+            return res.status(404).json({ error: 'Postagem não encontrada' });
+        }
+        
+        // Verificar se é o dono da postagem
+        if (postagens[0].usuario_id !== parseInt(usuarioId)) {
+            return res.status(403).json({ error: 'Você não tem permissão para editar esta postagem' });
         }
 
         const [result] = await db.execute('UPDATE postagens SET conteudo = ? WHERE id = ?', [conteudo, id]);
@@ -430,16 +605,38 @@ app.put('/api/postagens/:id', async (req, res) => {
     }
 });
 
-// DELETE - Deletar postagem
+// DELETE - Deletar postagem (apenas admin ou dono da postagem)
 app.delete('/api/postagens/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        const usuarioId = req.body.usuarioId || req.query.usuarioId;
         
-        const [result] = await db.execute('DELETE FROM postagens WHERE id = ?', [id]);
+        if (!usuarioId) {
+            return res.status(401).json({ error: 'Usuário não autenticado' });
+        }
         
-        if (result.affectedRows === 0) {
+        // Buscar informações da postagem e do usuário
+        const [postagens] = await db.execute('SELECT usuario_id FROM postagens WHERE id = ?', [id]);
+        
+        if (postagens.length === 0) {
             return res.status(404).json({ error: 'Postagem não encontrada' });
         }
+        
+        const [users] = await db.execute('SELECT tipo FROM usuarios WHERE id = ?', [usuarioId]);
+        
+        if (users.length === 0) {
+            return res.status(401).json({ error: 'Usuário não encontrado' });
+        }
+        
+        // Verificar se é admin ou dono da postagem
+        const ehAdmin = users[0].tipo === 'admin';
+        const ehDono = postagens[0].usuario_id === parseInt(usuarioId);
+        
+        if (!ehAdmin && !ehDono) {
+            return res.status(403).json({ error: 'Você não tem permissão para deletar esta postagem' });
+        }
+        
+        const [result] = await db.execute('DELETE FROM postagens WHERE id = ?', [id]);
 
         res.json({ message: 'Postagem deletada com sucesso!' });
     } catch (error) {
@@ -478,6 +675,48 @@ app.get('/api/postagens/:id', async (req, res) => {
 
 // COMENTÁRIOS
 
+// ================================
+// ROTAS PARA ESTATÍSTICAS (ADMIN)
+// ================================
+
+// GET - Listar TODOS os comentários (para estatísticas)
+app.get('/api/comentarios', async (req, res) => {
+    try {
+        const [comments] = await db.execute('SELECT * FROM comentarios');
+        res.json(comments);
+    } catch (error) {
+        console.error('Erro ao buscar todos os comentários:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+// GET - Listar TODAS as curtidas (para estatísticas)
+app.get('/api/curtidas', async (req, res) => {
+    try {
+        const [likes] = await db.execute('SELECT * FROM curtidas');
+        res.json(likes);
+    } catch (error) {
+        console.error('Erro ao buscar todas as curtidas:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+// GET - Listar TODAS as conversas (para estatísticas)
+app.get('/api/conversas', async (req, res) => {
+    try {
+        const [conversas] = await db.execute('SELECT * FROM conversas');
+        res.json(conversas);
+    } catch (error) {
+        console.error('Erro ao buscar todas as conversas:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+// ================================
+// ROTAS DE COMENTÁRIOS
+// ================================
+
+// GET - Buscar comentários de uma postagem específica
 app.get('/api/comentarios/:postagem_id', async (req, res) => {
     try {
         const [comments] = await db.execute(`
@@ -920,8 +1159,8 @@ app.get('/api/mensagens/:conversaId', async (req, res) => {
             INNER JOIN usuarios u ON m.remetente_id = u.id
             WHERE m.conversa_id = ?
             ORDER BY m.criado_em ASC
-            LIMIT ? OFFSET ?
-        `, [conversaId, limit, offset]);
+            LIMIT ${limit} OFFSET ${offset}
+        `, [conversaId]);
         
         res.json(mensagens);
     } catch (error) {
@@ -996,7 +1235,7 @@ app.put('/api/mensagens/marcar-lidas/:conversaId/:usuarioId', async (req, res) =
 // ================================
 
 io.on('connection', (socket) => {
-    console.log(`✅ Socket conectado: ${socket.id}`);
+    console.log(`Socket conectado: ${socket.id}`);
 
     // Entrar em uma sala (conversa)
     socket.on('join-room', (conversaId) => {
@@ -1016,10 +1255,53 @@ io.on('connection', (socket) => {
 
     // Desconexão
     socket.on('disconnect', () => {
-        console.log(`❌ Socket desconectado: ${socket.id}`);
+        console.log(`Socket desconectado: ${socket.id}`);
     });
 
     
+});
+
+// ================================
+// ROTA ESPECIAL: CRIAR ADMIN (APENAS DESENVOLVIMENTO)
+// ================================
+app.post('/api/criar-admin-inicial', async (req, res) => {
+    try {
+        // Verificar se já existe
+        const [usuarios] = await db.query(
+            'SELECT * FROM usuarios WHERE email = ?',
+            ['annaluizapm2007@gmail.com']
+        );
+
+        if (usuarios.length > 0) {
+            // Atualizar para admin
+            await db.query(
+                'UPDATE usuarios SET tipo = ?, senha = ? WHERE email = ?',
+                ['admin', '123', 'annaluizapm2007@gmail.com']
+            );
+            res.json({ 
+                success: true, 
+                message: 'Usuário promovido a admin com sucesso!',
+                usuario: usuarios[0]
+            });
+        } else {
+            // Criar novo admin
+            const [result] = await db.query(
+                'INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)',
+                ['Anna Luiza', 'annaluizapm2007@gmail.com', '123', 'admin']
+            );
+            res.json({ 
+                success: true, 
+                message: 'Usuário admin criado com sucesso!',
+                id: result.insertId
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao criar admin:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
 });
 
 // ================================
@@ -1027,9 +1309,9 @@ io.on('connection', (socket) => {
 // ================================
 
 server.listen(PORT, '127.0.0.1', () => {
-    console.log(` Servidor rodando na porta ${PORT}`);
-    console.log(` Ambiente: ${process.env.NODE_ENV || 'development'}`);
-    console.log(` Acesse: http://127.0.0.1:${PORT}`);
-    console.log(` Teste: http://127.0.0.1:${PORT}/api/test`);
-    console.log(` Socket.IO ativo para chat em tempo real`);
+    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Acesse: http://127.0.0.1:${PORT}`);
+    console.log(`Teste: http://127.0.0.1:${PORT}/api/test`);
+    console.log(`Socket.IO ativo para chat em tempo real`);
 });

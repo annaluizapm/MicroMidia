@@ -103,7 +103,7 @@ document.getElementById("formDiagnostico").addEventListener("submit", async func
             <div id="resultado-conteudo">
                 ${formatarDiagnostico(data.diagnostico)}
             </div>
-            <button onclick="location.reload()" class="btn-primary" style="margin-top: 30px;">✨ Fazer Novo Diagnóstico</button>
+            <button onclick="location.reload()" class="btn-primary" style="margin-top: 30px;">Fazer Novo Diagnóstico</button>
         `;
         
         window.scrollTo({ top: 0, behavior: 'smooth' });

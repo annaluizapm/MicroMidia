@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - MicroMídia</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/feed.css">
+    <style>
+        body {
+            display: block;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card .number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #D90429;
+            margin: 10px 0;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stat-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .admin-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .admin-section h2 {
+            color: #D90429;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .users-table, .posts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th, .posts-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .users-table td, .posts-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .users-table tr:hover, .posts-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .badge-user {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-admin {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 2px;
+            transition: all 0.2s;
+        }
+
+        .btn-promote {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-demote {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-ban {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-admin:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar input, .filter-bar select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    
+    <header>
+        <div class="logo">
+            <img src="../assets/Logo.png" alt="MicroMídia">
+        </div>
+        <nav class="navigation">
+            <a href="feed.html" class="nav-link"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
+            <a href="busca.html" class="nav-link"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="perfil.html" class="nav-link"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
+            <a href="formulario.html" class="nav-link"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
+            <a href="admin.html" class="nav-link active"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
+            <a href="chat.html" class="nav-link"><img src="../assets/icone-chat.png" alt="Chat" style="width: 16px; height: 16px; vertical-align: middle;"> Chat</a>
+        </nav>
+        <div class="user-info">
+            <span class="user-name" id="user-name-display">Carregando...</span>
+            <button class="btn-logout" onclick="logout()" title="Sair">Logout</button>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <!-- Estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon"><img src="../assets/usuarios.png" style="width: 50px;"></div>
+                <div class="number" id="stat-users">0</div>
+                <div class="label">Usuários Totais</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><img src="../assets/perfil-de-usuario.png" style="width: 50px;"></div>
+                <div class="number" id="stat-admins">0</div>
+                <div class="label">Administradores</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><img src="../assets/feed.png" style="width: 50px;"></div>
+                <div class="number" id="stat-posts">0</div>
+                <div class="label">Postagens</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><img src="../assets/icone-comentario.png" style="width: 50px;"></div>
+                <div class="number" id="stat-comments">0</div>
+                <div class="label">Comentários</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><img src="../assets/icone-like.png" style="width: 50px;"></div>
+                <div class="number" id="stat-likes">0</div>
+                <div class="label">Curtidas</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><img src="../assets/icone-chat.png" style="width: 50px;"></div>
+                <div class="number" id="stat-conversations">0</div>
+                <div class="label">Conversas</div>
+            </div>
+        </div>
+
+        <!-- Gerenciamento de Usuários -->
+        <div class="admin-section">
+            <h2>Gerenciamento de Usuários</h2>
+            
+            <div class="filter-bar">
+                <input type="text" id="filter-users" placeholder="Buscar por nome ou email...">
+                <select id="filter-type">
+                    <option value="">Todos os tipos</option>
+                    <option value="admin">Apenas Admins</option>
+                    <option value="usuario">Apenas Usuários</option>
+                </select>
+                <select id="filter-status">
+                    <option value="">Todos os status</option>
+                    <option value="ativo">Apenas Ativos</option>
+                    <option value="banido">Apenas Banidos</option>
+                </select>
+            </div>
+
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="users-list">
+                    <tr><td colspan="6" style="text-align: center; padding: 40px;">Carregando usuários...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Gerenciamento de Postagens -->
+        <div class="admin-section">
+            <h2>Gerenciamento de Postagens</h2>
+            
+            <div class="filter-bar">
+                <input type="text" id="filter-posts" placeholder="Buscar em postagens...">
+                <select id="filter-category">
+                    <option value="">Todas as categorias</option>
+                    <option value="Geral">Geral</option>
+                    <option value="Dúvidas">Dúvidas</option>
+                    <option value="Novidades">Novidades</option>
+                </select>
+            </div>
+
+            <table class="posts-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Autor</th>
+                        <th>Conteúdo</th>
+                        <th>Categoria</th>
+                        <th>Curtidas</th>
+                        <th>Comentários</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="posts-list">
+                    <tr><td colspan="8" style="text-align: center; padding: 40px;">Carregando postagens...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../JS/script.js"></script>
+    <script>
+        // Atualizar nome do usuário no header
+        document.addEventListener('DOMContentLoaded', () => {
+            const usuario = JSON.parse(localStorage.getItem('usuarioLogado') || '{}');
+            const userName = document.getElementById('user-name-display');
+            if (userName && usuario.nome) {
+                userName.textContent = usuario.nome;
+            }
+        });
+    </script>
+    <script src="../JS/admin.js"></script>
+</body>
+</html>

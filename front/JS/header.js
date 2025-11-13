@@ -31,6 +31,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (userNameDisplay) {
         if (usuario) {
             userNameDisplay.textContent = `Olá, ${usuario.nome}!`;
+            
+            // Mostrar link de Admin apenas para admins
+            const adminLink = document.getElementById('admin-link');
+            if (adminLink && usuario.tipo === 'admin') {
+                adminLink.style.display = 'inline-block';
+                console.log('Link de Admin habilitado para:', usuario.nome);
+            }
         } else {
             // Se não há usuário logado, redirecionar para login
             const currentPage = window.location.pathname;

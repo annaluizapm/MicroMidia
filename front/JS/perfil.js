@@ -324,8 +324,14 @@ async function carregarPostagensUsuario() {
                 <div class="post-item">
                     <div class="post-content">${post.conteudo}</div>
                     <div class="post-meta">
-                        <span>${new Date(post.criado_em || post.created_at).toLocaleString()}</span>
-                        <span>❤️ ${post.curtidas || 0} | 💬 ${post.comentarios || 0}</span>
+                        <span>${new Date(post.criado_em || post.created_at).toLocaleString('pt-BR', { 
+                            day: '2-digit', 
+                            month: '2-digit', 
+                            year: 'numeric', 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        })}</span>
+                        <span><img src="../assets/icone-like.png" alt="Curtidas" style="width: 14px; height: 14px; vertical-align: middle;"> ${post.curtidas || 0} | <img src="../assets/icone-comentario.png" alt="Comentários" style="width: 14px; height: 14px; vertical-align: middle;"> ${post.comentarios || 0}</span>
                     </div>
                 </div>
             `).join('');

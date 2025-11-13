@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: __dirname + '/../.env' });
 const mysql = require('mysql2');
 
 const dbConfig = {
@@ -9,15 +9,22 @@ const dbConfig = {
     connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT) || 10
 };
 
+console.log('Tentando conectar ao MySQL com:', { 
+    host: dbConfig.host, 
+    user: dbConfig.user, 
+    database: dbConfig.database,
+    password: dbConfig.password ? '***' : '(vazia)'
+});
+
 const pool = mysql.createPool(dbConfig);
 const db = pool.promise();
 
 // Testar conexão ao iniciar
 pool.getConnection((err, connection) => {
     if (err) {
-        console.error('❌ Erro ao conectar ao MySQL:', err.message);
+        console.error('Erro ao conectar ao MySQL:', err.message);
     } else {
-        console.log('✅ Conectado ao MySQL com sucesso!');
+        console.log('Conectado ao MySQL com sucesso!');
         connection.release();
     }
 });

@@ -15,11 +15,12 @@ USE micro_midia;
 -- TABELA: USUÁRIOS
 -- ================================================
 
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
+    tipo ENUM('admin', 'usuario') DEFAULT 'usuario',
     bio TEXT,
     foto_perfil VARCHAR(500),
     empresa VARCHAR(100),
@@ -28,6 +29,7 @@ CREATE TABLE usuarios (
     site_empresa VARCHAR(255),
     linkedin VARCHAR(255),
     criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email)
 );
 
@@ -35,7 +37,7 @@ CREATE TABLE usuarios (
 -- TABELA: NEGÓCIOS
 -- ================================================
 
-CREATE TABLE negocios (
+CREATE TABLE IF NOT EXISTS negocios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
@@ -51,7 +53,7 @@ CREATE TABLE negocios (
 -- TABELA: POSTAGENS
 -- ================================================
 
-CREATE TABLE postagens (
+CREATE TABLE IF NOT EXISTS postagens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     conteudo TEXT NOT NULL,
@@ -68,7 +70,7 @@ CREATE TABLE postagens (
 -- TABELA: CURTIDAS (Compatibilidade com sistema antigo)
 -- ================================================
 
-CREATE TABLE curtidas (
+CREATE TABLE IF NOT EXISTS curtidas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     postagem_id INT NOT NULL,
@@ -80,27 +82,10 @@ CREATE TABLE curtidas (
 );
 
 -- ================================================
--- TABELA: REAÇÕES (RF3 - Sistema completo de reações)
--- ================================================
-
-CREATE TABLE reacoes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    postagem_id INT NOT NULL,
-    tipo ENUM('curtir', 'apoiar', 'inspirador', 'util', 'celebrar') DEFAULT 'curtir',
-    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    FOREIGN KEY (postagem_id) REFERENCES postagens(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_reacao (usuario_id, postagem_id),
-    INDEX idx_postagem (postagem_id),
-    INDEX idx_tipo (tipo)
-);
-
--- ================================================
 -- TABELA: COMENTÁRIOS
 -- ================================================
 
-CREATE TABLE comentarios (
+CREATE TABLE IF NOT EXISTS comentarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     postagem_id INT NOT NULL,
@@ -116,7 +101,7 @@ CREATE TABLE comentarios (
 -- RF2: SISTEMA DE CHAT/MENSAGENS
 -- ================================================
 
-CREATE TABLE conversas (
+CREATE TABLE IF NOT EXISTS conversas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tipo ENUM('privada', 'grupo') DEFAULT 'privada',
     nome VARCHAR(100),
@@ -125,19 +110,8 @@ CREATE TABLE conversas (
     INDEX idx_tipo (tipo)
 );
 
-CREATE TABLE participantes_conversa (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    conversa_id INT NOT NULL,
-    usuario_id INT NOT NULL,
-    ultima_leitura DATETIME,
-    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conversa_id) REFERENCES conversas(id) ON DELETE CASCADE,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_participante (conversa_id, usuario_id),
-    INDEX idx_usuario (usuario_id)
-);
 
-CREATE TABLE mensagens (
+CREATE TABLE IF NOT EXISTS mensagens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     conversa_id INT NOT NULL,
     remetente_id INT NOT NULL,
@@ -154,7 +128,7 @@ CREATE TABLE mensagens (
 -- RF5: SISTEMA DE DIAGNÓSTICO COM IA
 -- ================================================
 
-CREATE TABLE diagnosticos (
+CREATE TABLE IF NOT EXISTS diagnosticos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     empresa VARCHAR(100),
@@ -171,17 +145,71 @@ CREATE TABLE diagnosticos (
     INDEX idx_criado (criado_em)
 );
 
-CREATE TABLE recomendacoes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    diagnostico_id INT NOT NULL,
-    categoria VARCHAR(50),
-    titulo VARCHAR(200),
-    descricao TEXT,
-    prioridade ENUM('alta', 'media', 'baixa') DEFAULT 'media',
-    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (diagnostico_id) REFERENCES diagnosticos(id) ON DELETE CASCADE,
-    INDEX idx_diagnostico (diagnostico_id)
+
+SELECT 
+    (SELECT COUNT(*) FROM usuarios) as 'Total de Usuários',
+    (SELECT COUNT(*) FROM postagens) as 'Total de Postagens',
+    (SELECT COUNT(*) FROM comentarios) as 'Total de Comentários',
+    (SELECT COUNT(*) FROM curtidas) as 'Total de Curtidas',
+    (SELECT COUNT(*) FROM conversas) as 'Total de Conversas',
+    (SELECT COUNT(*) FROM mensagens) as 'Total de Mensagens',
+    (SELECT COUNT(*) FROM diagnosticos) as 'Total de diagnosticos';
+
+-- ================================================
+-- ADICIONAR COLUNA TIPO (SE NÃO EXISTIR)
+-- ================================================
+-- Verificar se a coluna já existe antes de adicionar
+SET @col_exists = 0;
+SELECT COUNT(*) INTO @col_exists 
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_SCHEMA = 'micro_midia' 
+AND TABLE_NAME = 'usuarios' 
+AND COLUMN_NAME = 'tipo';
+
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE usuarios ADD COLUMN tipo ENUM(''admin'', ''usuario'') DEFAULT ''usuario'' AFTER senha;',
+    'SELECT ''Coluna tipo já existe'' as mensagem;'
 );
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- ================================================
+-- ADICIONAR COLUNA BANIDO (SE NÃO EXISTIR)
+-- ================================================
+-- Verificar se a coluna já existe antes de adicionar
+SET @col_banido = 0;
+SELECT COUNT(*) INTO @col_banido 
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_SCHEMA = 'micro_midia' 
+AND TABLE_NAME = 'usuarios' 
+AND COLUMN_NAME = 'banido';
+
+SET @sql_banido = IF(@col_banido = 0, 
+    'ALTER TABLE usuarios ADD COLUMN banido BOOLEAN DEFAULT FALSE AFTER tipo;',
+    'SELECT ''Coluna banido já existe'' as mensagem;'
+);
+
+PREPARE stmt2 FROM @sql_banido;
+EXECUTE stmt2;
+DEALLOCATE PREPARE stmt2;
+
+-- ================================================
+-- PROMOVER USUÁRIO A ADMINISTRADOR
+-- ================================================
+-- Criar usuário admin se não existir:
+INSERT INTO usuarios (nome, email, senha, tipo) 
+SELECT 'Anna Luiza', 'annaluizapm2007@gmail.com', '123', 'admin'
+WHERE NOT EXISTS (
+    SELECT 1 FROM usuarios WHERE email = 'annaluizapm2007@gmail.com'
+);
+
+-- Atualizar para admin se já existir:
+UPDATE usuarios SET tipo = 'admin' WHERE email = 'annaluizapm2007@gmail.com';
+
+-- Verificar se funcionou:
+SELECT id, nome, email, tipo FROM usuarios WHERE email = 'annaluizapm2007@gmail.com';
 
 -- ================================================
 -- FIM DO SCRIPT

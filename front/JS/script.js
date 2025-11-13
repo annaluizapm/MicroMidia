@@ -28,6 +28,86 @@ function verificarUsuarioLogado() {
     }
 }
 
+// Função para verificar se o usuário é admin
+function ehAdmin() {
+    const usuario = verificarUsuarioLogado();
+    console.log('Verificando admin:', usuario);
+    console.log('Tipo do usuário:', usuario?.tipo);
+    return usuario && usuario.tipo === 'admin';
+}
+
+// Função para obter botões de ação da postagem (deletar para admin ou dono)
+function getPostActionButtons(post) {
+    const usuarioLogado = verificarUsuarioLogado();
+    if (!usuarioLogado) {
+        console.log('❌ Nenhum usuário logado - não mostra botões');
+        return '';
+    }
+    
+    const ehDono = post.usuario_id === usuarioLogado.id;
+    const ehAdminUser = ehAdmin();
+    
+    console.log('🔍 Post ID:', post.id, '| Dono:', post.usuario_nome, '| ehDono:', ehDono, '| ehAdmin:', ehAdminUser, '| Mostra botão?', (ehAdminUser || ehDono));
+    
+    let botoes = '';
+    
+    // Botão de editar - apenas para o dono
+    if (ehDono) {
+        botoes += `
+            <button onclick="editarPostagem(${post.id}, '${post.conteudo.replace(/'/g, "\\'")}', '${post.categoria}')" class="btn-action btn-edit">
+                Editar
+            </button>
+        `;
+    }
+    
+    // Botão de deletar - para o dono ou admin
+    if (ehAdminUser || ehDono) {
+        const badgeAdmin = ehAdminUser && !ehDono ? '<span class="badge-admin-action">ADMIN</span>' : '';
+        botoes += `
+            <button onclick="deletarPostagem(${post.id})" class="btn-action btn-delete">
+                Deletar ${badgeAdmin}
+            </button>
+        `;
+    }
+    
+    if (!botoes) {
+        console.log('❌ Não mostra botões');
+    }
+    
+    return botoes;
+}
+
+// Função para deletar postagem
+async function deletarPostagem(postId) {
+    const usuarioLogado = verificarUsuarioLogado();
+    if (!usuarioLogado) {
+        mostrarMensagem('Você precisa estar logado', 'erro');
+        return;
+    }
+    
+    if (!confirm('Tem certeza que deseja deletar esta postagem?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/postagens/${postId}?usuarioId=${usuarioLogado.id}`, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            mostrarMensagem('Postagem deletada com sucesso!', 'sucesso');
+            listarPostagens(); // Recarregar postagens
+        } else {
+            mostrarMensagem(data.error || 'Erro ao deletar postagem', 'erro');
+        }
+    } catch (error) {
+        console.error('Erro ao deletar postagem:', error);
+        mostrarMensagem('Erro ao deletar postagem', 'erro');
+    }
+}
+
 // Função para fazer logout
 function logout() {
     localStorage.removeItem('usuarioLogado');
@@ -219,13 +299,22 @@ async function buscarPostagem(id) {
 
 // Atualizar postagem
 async function atualizarPostagem(id, conteudo) {
+    const usuarioLogado = verificarUsuarioLogado();
+    if (!usuarioLogado) {
+        mostrarMensagem('Você precisa estar logado', 'erro');
+        return;
+    }
+    
     try {
         const response = await fetch(`${API_BASE_URL}/postagens/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ conteudo })
+            body: JSON.stringify({ 
+                conteudo,
+                usuarioId: usuarioLogado.id 
+            })
         });
 
         const data = await response.json();
@@ -242,80 +331,15 @@ async function atualizarPostagem(id, conteudo) {
     }
 }
 
-// Deletar postagem
-async function deletarPostagem(id) {
-    // Verificar se o usuário está logado
-    const usuarioLogado = verificarUsuarioLogado();
-    if (!usuarioLogado) {
-        mostrarMensagem('Você precisa estar logado para deletar uma postagem', 'erro');
-        return;
-    }
-    
-    // Verificar se o usuário é o dono da postagem
-    try {
-        const postResponse = await fetch(`${API_BASE_URL}/postagens/${id}`);
-        if (!postResponse.ok) {
-            mostrarMensagem('Não foi possível verificar a postagem', 'erro');
-            return;
-        }
-        
-        const postagem = await postResponse.json();
-        
-        // Verificar se o usuário atual é o dono da postagem
-        if (postagem.usuario_id !== usuarioLogado.id) {
-            mostrarMensagem('Você só pode deletar suas próprias postagens', 'erro');
-            return;
-        }
-        
-        // Confirmar a exclusão
-        if (!confirm('Tem certeza que deseja deletar esta postagem?')) return;
-        
-        const response = await fetch(`${API_BASE_URL}/postagens/${id}`, {
-            method: 'DELETE'
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            mostrarMensagem('Postagem deletada com sucesso!', 'sucesso');
-            listarPostagens(); // Recarregar postagens
-        } else if (response.status === 404) {
-            mostrarMensagem('Postagem não encontrada (pode já ter sido deletada)', 'erro');
-            listarPostagens(); // Recarregar para atualizar a lista
-        } else {
-            // Tentar ler a resposta como JSON, senão usar status
-            try {
-                const data = await response.json();
-                mostrarMensagem(data.error || 'Erro ao deletar postagem', 'erro');
-            } catch {
-                mostrarMensagem(`Erro ${response.status}: ${response.statusText}`, 'erro');
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao deletar postagem:', error);
-        mostrarMensagem('Erro de conexão com o servidor', 'erro');
-    }
-}
+// FUNÇÃO deletarPostagem REMOVIDA - Duplicata que não permite admin deletar
+// A versão correta está nas linhas 65-93 e permite admin deletar qualquer postagem
 
 // ================================
 // FUNÇÕES DE INTERFACE
 // ================================
 
 // Função para determinar quais botões de ação mostrar para cada postagem
-function getPostActionButtons(post) {
-    // Verificar se o usuário está logado
-    const usuarioLogado = verificarUsuarioLogado();
-    
-    // Se não estiver logado ou não for o dono da postagem, não mostra botões de edição/exclusão
-    if (!usuarioLogado || post.usuario_id !== usuarioLogado.id) {
-        return '';
-    }
-    
-    // Se for o dono da postagem, mostra botões de edição e exclusão
-    return `
-        <button onclick="editarPostagem(${post.id}, '${post.conteudo.replace(/'/g, "\\'")}'))" class="btn-small">Editar</button>
-        <button onclick="deletarPostagem(${post.id})" class="btn-small">Deletar</button>
-    `;
-}
+// REMOVIDA FUNÇÃO DUPLICADA - Usar a função getPostActionButtons que já está definida no início do arquivo
 
 // Exibir postagens na tela
 function exibirPostagens(postagens) {
@@ -346,18 +370,6 @@ function exibirPostagens(postagens) {
     }
 
     postagens.forEach(post => {
-        // Emoji da categoria
-        const categoriaEmojis = {
-            'Geral': '📝',
-            'Dúvida': '❓',
-            'Dica': '💡',
-            'Negócio': '💼',
-            'Marketing': '📈',
-            'Networking': '🤝'
-        };
-        
-        const categoriaEmoji = categoriaEmojis[post.categoria] || '📝';
-        
         // Formatação das tags
         let tagsHTML = '';
         if (post.tags && post.tags.trim()) {
@@ -378,21 +390,28 @@ function exibirPostagens(postagens) {
                     ${perfilImagemHTML}
                     <div>
                         <strong>${post.usuario_nome || 'Usuário'}</strong>
+                        ${post.usuario_tipo === 'admin' ? '<span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; margin-left: 5px; font-weight: 600;">👑 ADMIN</span>' : ''}
                         <span class="categoria-badge" style="background: #D90429; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.8em; margin-left: 8px;">
-                            ${categoriaEmoji} ${post.categoria || 'Geral'}
+                            ${post.categoria || 'Geral'}
                         </span>
                     </div>
                 </div>
-                <div class="post-date">${new Date(post.criado_em || post.created_at).toLocaleString()}</div>
+                <div class="post-date">${new Date(post.criado_em || post.created_at).toLocaleString('pt-BR', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                })}</div>
             </div>
             <p>${post.conteudo}</p>
             ${tagsHTML}
             <div class="post-actions">
                 <button onclick="curtirPost(${post.id})" class="btn-like">
-                    ❤️ ${post.curtidas || 0} curtidas
+                    <img src="../assets/icone-like.png" alt="Curtir" style="width: 16px; height: 16px; vertical-align: middle;"> ${post.curtidas || 0} curtidas
                 </button>
                 <button onclick="verComentarios(${post.id})" class="btn-comment">
-                    💬 ${post.comentarios || 0} comentários
+                    <img src="../assets/icone-comentario.png" alt="Comentar" style="width: 16px; height: 16px; vertical-align: middle;"> ${post.comentarios || 0} comentários
                 </button>
                 ${getPostActionButtons(post)}
             </div>
@@ -484,7 +503,13 @@ async function carregarComentarios(postId) {
                         <div style="flex: 1;">
                             <strong>${comentario.autor_nome || 'Usuário'}</strong>
                             <p style="margin: 5px 0;">${comentario.texto}</p>
-                            <small style="color: #666;">${new Date(comentario.criado_em).toLocaleString()}</small>
+                            <small style="color: #666;">${new Date(comentario.criado_em).toLocaleString('pt-BR', { 
+                                day: '2-digit', 
+                                month: '2-digit', 
+                                year: 'numeric', 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                            })}</small>
                         </div>
                     </div>
                 `;
@@ -542,9 +567,16 @@ async function adicionarComentario(postId) {
 }
 
 // Editar postagem
-function editarPostagem(id, conteudoAtual) {
+function editarPostagem(id, conteudoAtual, categoriaAtual) {
     const novoConteudo = prompt('Editar postagem:', conteudoAtual);
-    if (novoConteudo && novoConteudo !== conteudoAtual) {
+    if (novoConteudo === null) return; // Cancelou
+    
+    if (novoConteudo.trim() === '') {
+        mostrarMensagem('O conteúdo não pode estar vazio', 'erro');
+        return;
+    }
+    
+    if (novoConteudo !== conteudoAtual) {
         atualizarPostagem(id, novoConteudo);
     }
 }
@@ -687,20 +719,38 @@ async function handleLogin(event) {
     
     if (email && senha) {
         try {
-            const response = await fetch(`${API_BASE_URL}/usuarios`);
-            const usuarios = await response.json();
+            console.log('Tentando fazer login com:', email);
             
-            const usuario = usuarios.find(u => u.email === email);
-            if (usuario) {
+            const response = await fetch(`${API_BASE_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, senha })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                mostrarMensagem(error.error || 'Email ou senha incorretos', 'erro');
+                return;
+            }
+            
+            const data = await response.json();
+            
+            if (data.success && data.usuario) {
+                console.log('Login bem-sucedido! Usuário:', data.usuario);
+                
+                // Salvar usuário com TODOS os campos, incluindo 'tipo'
+                localStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
+                
                 mostrarMensagem('Login realizado com sucesso!', 'sucesso');
-                localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
                 window.location.href = 'feed.html';
             } else {
                 mostrarMensagem('Email ou senha incorretos', 'erro');
             }
         } catch (error) {
             console.error('Erro no login:', error);
-            mostrarMensagem('Erro de conexão', 'erro');
+            mostrarMensagem('Erro de conexão com o servidor', 'erro');
         }
     }
 }
@@ -708,10 +758,11 @@ async function handleLogin(event) {
 // Formulário de nova postagem
 function handleNovaPostagem() {
     const modal = document.createElement('div');
+    modal.id = 'modal-nova-postagem';
     modal.innerHTML = `
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
             <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                <h3 style="margin-top: 0; color: #D90429;">✍️ Nova Postagem</h3>
+                <h3 style="margin-top: 0; color: #D90429;">+ Nova Postagem</h3>
                 <form id="nova-postagem-form">
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Conteúdo:</label>
@@ -720,12 +771,12 @@ function handleNovaPostagem() {
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 600;">Categoria:</label>
                         <select id="postagem-categoria" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
-                            <option value="Geral">📝 Geral</option>
-                            <option value="Dúvida">❓ Dúvida</option>
-                            <option value="Dica">💡 Dica</option>
-                            <option value="Negócio">💼 Negócio</option>
-                            <option value="Marketing">📈 Marketing</option>
-                            <option value="Networking">🤝 Networking</option>
+                            <option value="Geral">Geral</option>
+                            <option value="Dúvida">Dúvida</option>
+                            <option value="Dica">Dica</option>
+                            <option value="Negócio">Negócio</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Networking">Networking</option>
                         </select>
                     </div>
                     <div style="margin-bottom: 20px;">
@@ -733,7 +784,7 @@ function handleNovaPostagem() {
                         <input type="text" id="postagem-tags" placeholder="Separe as tags por vírgula (ex: startup, dicas, marketing)" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
                     </div>
                     <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                        <button type="button" onclick="this.closest('div').parentElement.remove()" style="padding: 10px 20px; border: 2px solid #ddd; background: white; border-radius: 20px; cursor: pointer;">Cancelar</button>
+                        <button type="button" id="btn-cancelar-postagem" style="padding: 10px 20px; border: 2px solid #ddd; background: white; border-radius: 20px; cursor: pointer;">Cancelar</button>
                         <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #D90429 0%, #ff6b8a 100%); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: 600;">Publicar</button>
                     </div>
                 </form>
@@ -742,6 +793,11 @@ function handleNovaPostagem() {
     `;
     
     document.body.appendChild(modal);
+    
+    // Botão cancelar
+    document.getElementById('btn-cancelar-postagem').addEventListener('click', () => {
+        document.getElementById('modal-nova-postagem').remove();
+    });
     
     document.getElementById('nova-postagem-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -801,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const container = document.querySelector('.content');
     if (container && !document.querySelector('.btn-nova-postagem')) {
         const btn = document.createElement('button');
-        btn.textContent = '✍️ Nova Postagem';
+        btn.textContent = '+ Nova Postagem';
         btn.className = 'btn btn-primary btn-nova-postagem';
         btn.onclick = handleNovaPostagem;
         btn.style.marginBottom = '20px';

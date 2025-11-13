@@ -167,24 +167,40 @@ function createDebugBanner(){
             
             const itens = resultados.map(item => {
                 if (item.tipo === 'postagem') {
+                    const fotoPerfil = item.foto_perfil || '../assets/perfil-de-usuario.png';
+                    
                     return `
                         <div class="resultado-item">
                             <div class="resultado-header">
-                                <span class="resultado-autor">📝 ${item.usuario_nome || 'Usuário'}</span>
-                                <span class="resultado-data">${new Date(item.criado_em).toLocaleString()}</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <img src="${fotoPerfil}" alt="Foto" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                                    <span class="resultado-autor">${item.usuario_nome || 'Usuário'}</span>
+                                </div>
+                                <span class="resultado-data">${new Date(item.criado_em).toLocaleString('pt-BR', { 
+                                    day: '2-digit', 
+                                    month: '2-digit', 
+                                    year: 'numeric', 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                })}</span>
                             </div>
                             <div class="resultado-conteudo">${destacarTermo(item.conteudo, termo)}</div>
                             <div class="resultado-stats">
-                                <span>❤️ ${item.curtidas || 0} curtidas</span>
-                                <span>💬 ${item.comentarios || 0} comentários</span>
+                                <span><img src="../assets/icone-like.png" alt="Curtidas" style="width: 14px; height: 14px; vertical-align: middle;"> ${item.curtidas || 0} curtidas</span>
+                                <span><img src="../assets/icone-comentario.png" alt="Comentários" style="width: 14px; height: 14px; vertical-align: middle;"> ${item.comentarios || 0} comentários</span>
                             </div>
                         </div>
                     `;
                 } else {
+                    const fotoPerfil = item.foto_perfil || '../assets/perfil-de-usuario.png';
+                    
                     return `
                         <div class="resultado-item">
                             <div class="resultado-header">
-                                <span class="resultado-autor">👤 ${destacarTermo(item.nome, termo)}</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <img src="${fotoPerfil}" alt="Foto" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                                    <span class="resultado-autor">${destacarTermo(item.nome, termo)}</span>
+                                </div>
                                 <span class="resultado-data">Usuário</span>
                             </div>
                             <div class="resultado-conteudo">

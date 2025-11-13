@@ -12,16 +12,17 @@
             <img src="../assets/Logo.png" alt="MicroMídia">
         </div>
         <nav class="navigation">
-            <a href="feed.html" class="nav-link">📋 Feed</a>
-            <a href="busca.html" class="nav-link">🔍 Buscar</a>
-            <a href="usuarios.html" class="nav-link">👥 Usuários</a>
-            <a href="perfil.html" class="nav-link">👤 Perfil</a>
-            <a href="formulario.html" class="nav-link">📊 Diagnóstico</a>
-            <a href="chat.html" class="nav-link active">💬 Chat</a>
+            <a href="feed.html" class="nav-link"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
+            <a href="busca.html" class="nav-link"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="perfil.html" class="nav-link"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
+            <a href="formulario.html" class="nav-link"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
+            <a href="admin.html" class="nav-link" id="admin-link" style="display: none;"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
+            <a href="chat.html" class="nav-link active"><img src="../assets/icone-chat.png" alt="Chat" style="width: 16px; height: 16px; vertical-align: middle;"> Chat</a>
         </nav>
         <div class="user-info">
             <span class="user-name" id="user-name-display">Carregando...</span>
-            <button class="btn-logout" title="Sair">🚪 Logout</button>
+            <button class="btn-logout" title="Sair">Logout</button>
         </div>
     </header>
     
@@ -29,7 +30,7 @@
         <!-- Cabeçalho -->
         <header class="chat-header">
             <div class="header-left">
-                <h1>💬 Chat</h1>
+                <h1><img src="../assets/icone-chat.png" alt="Chat" style="width: 24px; height: 24px; vertical-align: middle;"> Chat</h1>
             </div>
             <div class="header-right">
                 <button class="btn-nova-conversa" id="btn-nova-conversa">+ Nova Conversa</button>
@@ -43,7 +44,7 @@
                 <div class="sidebar-header">
                     <h2>Conversas</h2>
                     <div class="search-box">
-                        <input type="text" id="search-conversas" placeholder="🔍 Buscar conversas...">
+                        <input type="text" id="search-conversas" placeholder="Buscar conversas...">
                     </div>
                 </div>
                 <div class="conversas-lista" id="conversas-lista">
@@ -58,7 +59,7 @@
             <!-- Área de Mensagens -->
             <section class="mensagens-area" id="mensagens-area">
                 <div class="mensagens-placeholder">
-                    <div class="placeholder-icon">💬</div>
+                    <div class="placeholder-icon"><img src="../assets/icone-chat.png" alt="Chat" style="width: 64px; height: 64px;"></div>
                     <h3>Selecione uma conversa</h3>
                     <p>Escolha uma conversa à esquerda ou inicie uma nova para começar a trocar mensagens</p>
                 </div>
@@ -69,12 +70,7 @@
                         <div class="conversa-avatar" id="conversa-avatar">👤</div>
                         <div class="conversa-detalhes">
                             <h3 id="conversa-nome">Nome do Contato</h3>
-                            <span class="conversa-status" id="conversa-status">Online</span>
                         </div>
-                    </div>
-                    <div class="conversa-acoes">
-                        <button class="btn-icon" title="Informações">ℹ️</button>
-                        <button class="btn-icon" title="Opções">⚙️</button>
                     </div>
                 </div>
 
@@ -86,7 +82,6 @@
                 <!-- Input de Mensagem (hidden inicialmente) -->
                 <div class="mensagem-input-container" id="mensagem-input-container" style="display: none;">
                     <form id="form-mensagem" class="mensagem-form">
-                        <button type="button" class="btn-anexo" title="Anexar arquivo">📎</button>
                         <textarea 
                             id="mensagem-texto" 
                             placeholder="Digite sua mensagem..." 
@@ -111,7 +106,7 @@
             </div>
             <div class="modal-body">
                 <div class="search-usuarios">
-                    <input type="text" id="search-usuarios" placeholder="🔍 Buscar usuários...">
+                    <input type="text" id="search-usuarios" placeholder="Buscar usuários...">
                 </div>
                 <div class="usuarios-lista" id="usuarios-lista">
                     <!-- Lista de usuários será carregada aqui -->
