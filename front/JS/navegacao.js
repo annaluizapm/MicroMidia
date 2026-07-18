@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'cadastro.html';
         });
     }
+
+    document.querySelectorAll('[data-action="cadastro"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            window.location.href = 'cadastro.html';
+        });
+    });
     
     if (btnLogin) {
         btnLogin.addEventListener('click', () => {
@@ -32,4 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    const currentYear = document.getElementById('current-year');
+    if (currentYear) {
+        currentYear.textContent = new Date().getFullYear();
+    }
 });

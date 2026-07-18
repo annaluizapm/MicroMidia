@@ -3,54 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A comunidade que conecta microempreendedores para trocar experiências, aprender marketing e fortalecer seus negócios.">
     <title>MicroMídia</title>
     <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/theme.css">
 </head>
 <body>
-    <div class="container">
-        <div class="content-wrapper">
-            <div class="logo-section">
-                <img src="../assets/Logo.png" alt="MicroMídia">
-            </div>
-            <header class="home-header">
-                <h1 class="slogan">Conectando ideias, fortalecendo negócios.</h1>
-                <p class="home-desc">A MicroMídia é uma rede social criada para conectar microempreendedores que desejam crescer no mundo digital. Aqui, você pode compartilhar experiências, trocar conhecimentos e descobrir novas estratégias de marketing para fortalecer o seu negócio. Um espaço colaborativo feito por e para quem empreende.</p>
-            </header>
-        </div>
-        
-        <div class="buttons">
-            <button type="button" class="btn-primary" id="btn-cadastro">Cadastre-se</button>
-            <button type="button" class="btn-primary" id="btn-login">Entrar</button>
-        </div>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-        <!-- Seção Como Funciona -->
-        <section class="how-it-works">
-            <h2 class="section-title">Como funciona?</h2>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h3>Cadastre-se</h3>
-                    <p>Crie sua conta gratuitamente em poucos minutos</p>
+    <header class="landing-nav" aria-label="Navegação principal">
+        <a class="brand" href="index.html" aria-label="MicroMídia — início">
+            <img src="../assets/Logo.png" alt="MicroMídia">
+        </a>
+        <nav class="landing-actions" aria-label="Acesso à plataforma">
+            <button type="button" class="btn-ghost" id="btn-login">Entrar</button>
+            <button type="button" class="btn-primary" id="btn-cadastro">Criar conta</button>
+        </nav>
+    </header>
+
+    <main id="conteudo">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-copy">
+                <span class="eyebrow">Comunidade para quem faz acontecer</span>
+                <h1 id="hero-title">Seu negócio cresce melhor com as <em>conexões certas.</em></h1>
+                <p>A MicroMídia reúne microempreendedores para trocar experiências reais, aprender marketing na prática e transformar boas ideias em resultados.</p>
+                <div class="hero-actions">
+                    <button type="button" class="btn-primary btn-large" data-action="cadastro">Participar da comunidade</button>
+                    <a class="text-link" href="#como-funciona">Conheça a plataforma <span aria-hidden="true">→</span></a>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h3>Compartilhe</h3>
-                    <p>Publique suas experiências, dúvidas e conquistas</p>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h3>Interaja</h3>
-                    <p>Conecte-se, comente e aprenda com outros empreendedores</p>
-                </div>
+                <ul class="trust-list" aria-label="Benefícios da plataforma">
+                    <li>Cadastro gratuito</li>
+                    <li>Conteúdo colaborativo</li>
+                    <li>Diagnóstico personalizado</li>
+                </ul>
+            </div>
+
+            <div class="hero-visual" aria-label="Recursos disponíveis na MicroMídia">
+                <article class="feature-card feature-card-main">
+                    <span class="feature-icon" aria-hidden="true">↗</span>
+                    <span class="feature-label">Diagnóstico digital</span>
+                    <strong>Descubra o próximo passo do seu negócio.</strong>
+                    <div class="progress-track" aria-hidden="true"><span></span></div>
+                    <small>Recomendações feitas para a sua realidade</small>
+                </article>
+                <article class="feature-card feature-card-float">
+                    <div class="avatar-stack" aria-hidden="true"><span>A</span><span>M</span><span>J</span></div>
+                    <strong>Comunidade ativa</strong>
+                    <small>Aprendizado de empreendedor para empreendedor</small>
+                </article>
+                <span class="visual-note">Ideias compartilhadas viram oportunidades.</span>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="index-footer">
-            <p>&copy; 2025 MicroMídia - Rede social para microempreendedores</p>
-            
-        </footer>
-    </div>
+        <section class="benefits-section" aria-labelledby="benefits-title">
+            <div class="section-heading">
+                <span class="eyebrow">Tudo em um só lugar</span>
+                <h2 id="benefits-title">Apoio prático para avançar com confiança</h2>
+                <p>Informação útil, ferramentas simples e pessoas que entendem os desafios de empreender.</p>
+            </div>
+            <div class="benefits-grid">
+                <article class="benefit-card">
+                    <span class="benefit-index">01</span>
+                    <h3>Troque experiências</h3>
+                    <p>Compartilhe dúvidas e conquistas com uma rede que vive desafios parecidos com os seus.</p>
+                </article>
+                <article class="benefit-card">
+                    <span class="benefit-index">02</span>
+                    <h3>Aprenda na prática</h3>
+                    <p>Encontre conversas sobre divulgação, presença digital, vendas e relacionamento com clientes.</p>
+                </article>
+                <article class="benefit-card">
+                    <span class="benefit-index">03</span>
+                    <h3>Planeje seus próximos passos</h3>
+                    <p>Use o diagnóstico de marketing para reconhecer oportunidades e priorizar melhorias.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="how-it-works" id="como-funciona" aria-labelledby="steps-title">
+            <div class="section-heading section-heading-light">
+                <span class="eyebrow">Comece agora</span>
+                <h2 id="steps-title">Simples para entrar. Valioso para continuar.</h2>
+            </div>
+            <ol class="steps-grid">
+                <li class="step-card"><span class="step-number">1</span><div><h3>Crie seu perfil</h3><p>Conte um pouco sobre você e seu negócio.</p></div></li>
+                <li class="step-card"><span class="step-number">2</span><div><h3>Explore a comunidade</h3><p>Encontre temas e pessoas que fazem sentido para você.</p></div></li>
+                <li class="step-card"><span class="step-number">3</span><div><h3>Compartilhe e evolua</h3><p>Participe das conversas e coloque novos aprendizados em prática.</p></div></li>
+            </ol>
+            <button type="button" class="btn-light btn-large" data-action="cadastro">Quero fazer parte</button>
+        </section>
+    </main>
+
+    <footer class="index-footer">
+        <a class="brand brand-footer" href="index.html"><img src="../assets/Logo.png" alt="MicroMídia"></a>
+        <p>Conectando ideias e fortalecendo pequenos negócios.</p>
+        <p class="copyright">&copy; <span id="current-year">2026</span> MicroMídia</p>
+    </footer>
 
     <script src="../JS/navegacao.js"></script>
 </body>
