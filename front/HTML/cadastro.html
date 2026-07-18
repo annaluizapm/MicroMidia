@@ -3,47 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crie sua conta gratuita na comunidade MicroMídia.">
     <title>Cadastro - MicroMídia</title>
     <link rel="stylesheet" href="../CSS/logincadastro.css">
     <link rel="stylesheet" href="../CSS/theme.css">
+    <link rel="stylesheet" href="../CSS/app.css">
 </head>
-<body>
-    <div class="container">
-        <div class="left">
-            <img src="../assets/Logo.png" alt="MicroMídia">
-        </div>
-        <div class="right">
-            <div class="login-box">
-                <h2>Criar conta</h2>
+<body class="auth-page page-signup">
+    <main class="auth-shell">
+        <section class="auth-story" aria-labelledby="signup-story-title">
+            <a href="index.html" class="auth-brand" aria-label="Voltar para o início">
+                <img src="../assets/Logo.png" alt="MicroMídia">
+            </a>
+            <div class="auth-story-copy">
+                <span class="page-kicker">Seu próximo passo</span>
+                <h1 id="signup-story-title">Empreender fica mais leve quando você não está sozinho.</h1>
+                <p>Crie seu perfil, apresente seu negócio e faça parte de uma rede que compartilha conhecimento de verdade.</p>
+            </div>
+            <p class="auth-privacy">Seus dados de perfil ajudam a criar conexões mais relevantes dentro da comunidade.</p>
+        </section>
+        <section class="auth-form-panel" aria-labelledby="signup-title">
+            <div class="login-box signup-box">
+                <span class="page-kicker">Cadastro gratuito</span>
+                <h2 id="signup-title">Crie sua conta</h2>
+                <p class="form-intro">Comece com seus dados básicos e conte um pouco sobre seu negócio.</p>
                 <form id="cadastroForm">
-                    <label for="nome">Nome</label>
-                    <input type="text" id="nome" name="nome" required>
+                    <div class="form-section">
+                    <h3>Seu perfil</h3>
+                    <label for="nome">Nome completo</label>
+                    <input type="text" id="nome" name="nome" placeholder="Como você quer ser chamado?" autocomplete="name" required>
 
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" placeholder="voce@exemplo.com" autocomplete="email" required>
 
                     <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" required>
+                    <input type="password" id="senha" name="senha" placeholder="Crie uma senha segura" autocomplete="new-password" required>
 
-                    <label for="foto_perfil">Foto de Perfil (opcional)</label>
+                    <label for="foto_perfil">Foto de perfil <span class="optional">Opcional</span></label>
                     <div class="foto-upload-container">
                         <input type="file" id="foto_perfil" name="foto_perfil" accept="image/*" style="display: none;">
                         <div class="foto-preview" id="foto-preview">
                             <div class="foto-placeholder">
-                                <span style="font-size: 12px;">Clique para adicionar foto</span>
+                                <span>Adicionar foto</span>
                             </div>
                         </div>
                     </div>
 
-                    <label for="bio">Biografia (opcional)</label>
+                    <label for="bio">Biografia <span class="optional">Opcional</span></label>
                     <textarea id="bio" name="bio" placeholder="Conte um pouco sobre você..."></textarea>
+                    </div>
 
-                    <h3 style="margin-top: 20px; margin-bottom: 10px; color: #D90429; font-size: 16px;">Informações do Negócio</h3>
+                    <div class="form-section">
+                    <h3>Seu negócio</h3>
 
-                    <label for="empresa">Nome da Empresa (opcional)</label>
+                    <label for="empresa">Nome da empresa <span class="optional">Opcional</span></label>
                     <input type="text" id="empresa" name="empresa" placeholder="Nome do seu negócio">
 
-                    <label for="segmento">Segmento de Atuação (opcional)</label>
+                    <label for="segmento">Segmento de atuação <span class="optional">Opcional</span></label>
                     <select id="segmento" name="segmento">
                         <option value="">Selecione...</option>
                         <option value="varejo">Varejo</option>
@@ -58,15 +74,19 @@
                         <option value="outro">Outro</option>
                     </select>
 
-                    <label for="cargo">Seu Cargo (opcional)</label>
+                    <label for="cargo">Seu cargo <span class="optional">Opcional</span></label>
                     <input type="text" id="cargo" name="cargo" placeholder="Ex: Proprietário, Gerente, etc.">
+                    </div>
 
                     <button type="submit" class="btn-primary">Cadastre-se</button>
-                    <button type="button" class="btn-secondary">Fazer login</button>
+                    <div class="auth-alternative">
+                        <span>Já possui uma conta?</span>
+                        <button type="button" class="btn-secondary">Fazer login</button>
+                    </div>
                 </form>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
     
     <script src="../JS/script.js"></script>
     <script src="../JS/cadastro.js"></script>

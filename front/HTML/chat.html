@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Converse diretamente com outros membros da comunidade MicroMídia.">
     <title>Chat - MicroMídia</title>
     <link rel="stylesheet" href="../CSS/chat.css">
     <link rel="stylesheet" href="../CSS/theme.css">
+    <link rel="stylesheet" href="../CSS/app.css">
 </head>
-<body>
+<body class="app-page page-chat">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
     <header>
         <div class="logo">
-            <img src="../assets/Logo.png" alt="MicroMídia">
+            <a href="feed.html" aria-label="Ir para o feed"><img src="../assets/Logo.png" alt="MicroMídia"></a>
         </div>
         <nav class="navigation">
             <a href="feed.html" class="nav-link"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
             <a href="busca.html" class="nav-link"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
-            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Comunidade" style="width: 16px; height: 16px; vertical-align: middle;"> Comunidade</a>
             <a href="perfil.html" class="nav-link"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
             <a href="formulario.html" class="nav-link"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
             <a href="admin.html" class="nav-link" id="admin-link" style="display: none;"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
@@ -23,18 +26,19 @@
         </nav>
         <div class="user-info">
             <span class="user-name" id="user-name-display">Carregando...</span>
-            <button class="btn-logout" title="Sair">Logout</button>
+            <button class="btn-logout" title="Sair">Sair</button>
         </div>
     </header>
     
-    <div class="chat-container">
+    <main class="chat-container app-main-shell" id="main-content">
         <!-- Cabeçalho -->
         <header class="chat-header">
             <div class="header-left">
-                <h1><img src="../assets/icone-chat.png" alt="Chat" style="width: 24px; height: 24px; vertical-align: middle;"> Chat</h1>
+                <span class="page-kicker">Conexões diretas</span>
+                <h1>Mensagens</h1>
             </div>
             <div class="header-right">
-                <button class="btn-nova-conversa" id="btn-nova-conversa">+ Nova Conversa</button>
+                <button class="btn-nova-conversa" id="btn-nova-conversa"><span aria-hidden="true">+</span> Nova conversa</button>
         
             </div>
         </header>
@@ -96,14 +100,14 @@
                 </div>
             </section>
         </div>
-    </div>
+    </main>
 
     <!-- Modal Nova Conversa -->
     <div class="modal" id="modal-nova-conversa">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Nova Conversa</h3>
-                <button class="modal-close" id="modal-close">&times;</button>
+                <button class="modal-close" id="modal-close" aria-label="Fechar modal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="search-usuarios">

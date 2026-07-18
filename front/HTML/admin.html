@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acompanhe métricas e gerencie a comunidade MicroMídia.">
     <title>Painel Admin - MicroMídia</title>
-    <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/feed.css">
     <link rel="stylesheet" href="../CSS/admin.css">
     <link rel="stylesheet" href="../CSS/theme.css">
+    <link rel="stylesheet" href="../CSS/app.css">
 </head>
-<body>
+<body class="app-page page-admin">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
     
     <header>
         <div class="logo">
-            <img src="../assets/Logo.png" alt="MicroMídia">
+            <a href="feed.html" aria-label="Ir para o feed"><img src="../assets/Logo.png" alt="MicroMídia"></a>
         </div>
         <nav class="navigation">
             <a href="feed.html" class="nav-link"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
             <a href="busca.html" class="nav-link"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
-            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Comunidade" style="width: 16px; height: 16px; vertical-align: middle;"> Comunidade</a>
             <a href="perfil.html" class="nav-link"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
             <a href="formulario.html" class="nav-link"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
             <a href="admin.html" class="nav-link active"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
@@ -26,11 +28,19 @@
         </nav>
         <div class="user-info">
             <span class="user-name" id="user-name-display">Carregando...</span>
-            <button class="btn-logout" onclick="logout()" title="Sair">Logout</button>
+            <button class="btn-logout" onclick="logout()" title="Sair">Sair</button>
         </div>
     </header>
 
-    <div class="admin-container">
+    <main class="admin-container app-main-shell" id="main-content">
+        <div class="page-intro admin-intro">
+            <div>
+                <span class="page-kicker">Visão geral</span>
+                <h1>Painel administrativo</h1>
+                <p>Acompanhe a atividade da plataforma e cuide da comunidade em um só lugar.</p>
+            </div>
+            <span class="admin-badge">Acesso administrativo</span>
+        </div>
         <!-- Estatísticas -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -132,7 +142,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </main>
 
     <script src="../JS/script.js"></script>
     <script>

@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Busque postagens, temas e pessoas na comunidade MicroMídia.">
     <title>Buscar - MicroMídia</title>
     <link rel="stylesheet" href="../CSS/busca.css">
     <link rel="stylesheet" href="../CSS/theme.css">
+    <link rel="stylesheet" href="../CSS/app.css">
    
 </head>
-<body>
+<body class="app-page page-search">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
     <header>
         <div class="logo">
-            <img src="../assets/Logo.png" alt="MicroMídia">
+            <a href="feed.html" aria-label="Ir para o feed"><img src="../assets/Logo.png" alt="MicroMídia"></a>
         </div>
         <nav class="navigation">
             <a href="feed.html" class="nav-link"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
             <a href="busca.html" class="nav-link active"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
-            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Comunidade" style="width: 16px; height: 16px; vertical-align: middle;"> Comunidade</a>
             <a href="perfil.html" class="nav-link"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
             <a href="formulario.html" class="nav-link"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
             <a href="admin.html" class="nav-link" id="admin-link" style="display: none;"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
@@ -24,21 +27,22 @@
         </nav>
         <div class="user-info">
             <span class="user-name" id="user-name-display">Carregando...</span>
-            <button class="btn-logout" title="Sair">Logout</button>
+            <button class="btn-logout" title="Sair">Sair</button>
         </div>
     </header>
     
-    <div class="busca-container">
+    <main class="busca-container app-main-shell" id="main-content">
         <div class="busca-header">
-            <h1><img src="../assets/busca.png" alt="Buscar" style="width: 24px; height: 24px; vertical-align: middle;"> Buscar no Fórum</h1>
-            <p>Encontre postagens e usuários rapidamente</p>
+            <span class="page-kicker">Explore a comunidade</span>
+            <h1>Encontre o que pode ajudar seu negócio</h1>
+            <p>Pesquise conversas, experiências e pessoas por tema ou palavra-chave.</p>
         </div>
         
         <div class="busca-rapida">
-            <div class="tag-busca" data-termo="dica">Dicas</div>
-            <div class="tag-busca" data-termo="ajuda">Ajuda</div>
-            <div class="tag-busca" data-termo="negócio">Negócios</div>
-            <div class="tag-busca" data-termo="marketing">Marketing</div>
+            <button type="button" class="tag-busca" data-termo="dica">Dicas</button>
+            <button type="button" class="tag-busca" data-termo="ajuda">Ajuda</button>
+            <button type="button" class="tag-busca" data-termo="negócio">Negócios</button>
+            <button type="button" class="tag-busca" data-termo="marketing">Marketing</button>
         </div>
         
         <form class="busca-form" id="busca-form">
@@ -59,13 +63,14 @@
             <button type="submit" class="btn-buscar">Buscar</button>
         </form>
         
-        <div id="resultados-container">
+        <section id="resultados-container" aria-live="polite">
             <div class="sem-resultados">
-                <h3>Pronto para buscar!</h3>
-                <p>Digite um termo acima ou clique em uma das tags para começar</p>
+                <span class="empty-icon" aria-hidden="true">⌕</span>
+                <h3>O que você quer descobrir?</h3>
+                <p>Digite um termo acima ou escolha um dos assuntos sugeridos.</p>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
     
     <script src="../JS/header.js"></script>
     <script src="../JS/busca.js"></script>

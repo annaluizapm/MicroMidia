@@ -350,11 +350,16 @@ function exibirPostagens(postagens) {
     const loading = document.getElementById('loading-message');
     if (loading) loading.remove();
 
-    // Limpar container mantendo título e botão
+    // Limpar container mantendo a introdução e o botão
+    const pageIntro = container.querySelector('.page-intro');
     const titulo = container.querySelector('h2');
     const btnNova = container.querySelector('.btn-nova-postagem');
     container.innerHTML = '';
-    if (titulo) container.appendChild(titulo);
+    if (pageIntro) {
+        container.appendChild(pageIntro);
+    } else if (titulo) {
+        container.appendChild(titulo);
+    }
     if (btnNova) container.appendChild(btnNova);
 
     if (postagens.length === 0) {
@@ -759,18 +764,29 @@ async function handleLogin(event) {
 function handleNovaPostagem() {
     const modal = document.createElement('div');
     modal.id = 'modal-nova-postagem';
+    modal.className = 'post-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'nova-postagem-title');
     modal.innerHTML = `
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
-            <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                <h3 style="margin-top: 0; color: #D90429;">+ Nova Postagem</h3>
-                <form id="nova-postagem-form">
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Conteúdo:</label>
-                        <textarea id="postagem-conteudo" placeholder="O que você está pensando?" style="width: 100%; height: 100px; padding: 10px; border: 2px solid #ddd; border-radius: 8px; resize: vertical;" required></textarea>
+        <div class="post-modal-backdrop">
+            <div class="post-modal-content">
+                <div class="post-modal-header">
+                    <div>
+                        <span class="page-kicker">Compartilhe com a comunidade</span>
+                        <h3 id="nova-postagem-title">Nova postagem</h3>
                     </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Categoria:</label>
-                        <select id="postagem-categoria" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                    <button type="button" id="btn-cancelar-postagem" class="post-modal-close" aria-label="Fechar">&times;</button>
+                </div>
+                <form id="nova-postagem-form">
+                    <div class="modal-form-group">
+                        <label for="postagem-conteudo">Conteúdo</label>
+                        <textarea id="postagem-conteudo" placeholder="Compartilhe uma ideia, dúvida ou aprendizado..." required></textarea>
+                    </div>
+                    <div class="modal-form-row">
+                    <div class="modal-form-group">
+                        <label for="postagem-categoria">Categoria</label>
+                        <select id="postagem-categoria">
                             <option value="Geral">Geral</option>
                             <option value="Dúvida">Dúvida</option>
                             <option value="Dica">Dica</option>
@@ -779,13 +795,14 @@ function handleNovaPostagem() {
                             <option value="Networking">Networking</option>
                         </select>
                     </div>
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Tags (opcional):</label>
-                        <input type="text" id="postagem-tags" placeholder="Separe as tags por vírgula (ex: startup, dicas, marketing)" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                    <div class="modal-form-group">
+                        <label for="postagem-tags">Tags <span class="optional">Opcional</span></label>
+                        <input type="text" id="postagem-tags" placeholder="Ex: vendas, marketing">
                     </div>
-                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                        <button type="button" id="btn-cancelar-postagem" style="padding: 10px 20px; border: 2px solid #ddd; background: white; border-radius: 20px; cursor: pointer;">Cancelar</button>
-                        <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #D90429 0%, #ff6b8a 100%); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: 600;">Publicar</button>
+                    </div>
+                    <div class="post-modal-actions">
+                        <button type="button" class="btn-modal-cancel">Cancelar</button>
+                        <button type="submit" class="btn-primary">Publicar</button>
                     </div>
                 </form>
             </div>
@@ -795,9 +812,11 @@ function handleNovaPostagem() {
     document.body.appendChild(modal);
     
     // Botão cancelar
-    document.getElementById('btn-cancelar-postagem').addEventListener('click', () => {
+    const fecharModalPostagem = () => {
         document.getElementById('modal-nova-postagem').remove();
-    });
+    };
+    document.getElementById('btn-cancelar-postagem').addEventListener('click', fecharModalPostagem);
+    modal.querySelector('.btn-modal-cancel').addEventListener('click', fecharModalPostagem);
     
     document.getElementById('nova-postagem-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -857,7 +876,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const container = document.querySelector('.content');
     if (container && !document.querySelector('.btn-nova-postagem')) {
         const btn = document.createElement('button');
-        btn.textContent = '+ Nova Postagem';
+        btn.textContent = '+ Criar postagem';
         btn.className = 'btn btn-primary btn-nova-postagem';
         btn.onclick = handleNovaPostagem;
         btn.style.marginBottom = '20px';

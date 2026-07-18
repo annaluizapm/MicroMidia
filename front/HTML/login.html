@@ -3,31 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Entre na MicroMídia e conecte-se com uma comunidade de microempreendedores.">
     <title>Login - MicroMídia</title>
     <link rel="stylesheet" href="../CSS/logincadastro.css">
     <link rel="stylesheet" href="../CSS/theme.css">
+    <link rel="stylesheet" href="../CSS/app.css">
 </head>
-<body>
-    <div class="container">
-        <div class="left">
-            <img src="../assets/Logo.png" alt="MicroMídia">
-        </div>
-        <div class="right">
+<body class="auth-page page-login">
+    <main class="auth-shell">
+        <section class="auth-story" aria-labelledby="auth-story-title">
+            <a href="index.html" class="auth-brand" aria-label="Voltar para o início">
+                <img src="../assets/Logo.png" alt="MicroMídia">
+            </a>
+            <div class="auth-story-copy">
+                <span class="page-kicker">Comunidade que impulsiona</span>
+                <h1 id="auth-story-title">Boas conexões fazem o seu negócio avançar.</h1>
+                <p>Volte para acompanhar conversas, compartilhar aprendizados e encontrar novas ideias para crescer.</p>
+            </div>
+            <ul class="auth-benefits" aria-label="Benefícios da MicroMídia">
+                <li><span>01</span> Conteúdo de quem empreende</li>
+                <li><span>02</span> Diagnóstico de marketing</li>
+                <li><span>03</span> Networking sem complicação</li>
+            </ul>
+        </section>
+        <section class="auth-form-panel" aria-labelledby="login-title">
             <div class="login-box">
-                <h2>Login</h2>
+                <span class="page-kicker">Bem-vindo de volta</span>
+                <h2 id="login-title">Entre na sua conta</h2>
+                <p class="form-intro">Continue de onde parou na comunidade.</p>
                 <form id="loginForm">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" placeholder="voce@exemplo.com" autocomplete="email" required>
 
                     <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" required>
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" autocomplete="current-password" required>
 
                     <button type="submit" class="btn-primary">Entrar</button>
-                    <button type="button" class="btn-secondary">Criar conta</button>
+                    <div class="auth-alternative">
+                        <span>Ainda não participa?</span>
+                        <button type="button" class="btn-secondary">Criar conta gratuita</button>
+                    </div>
                 </form>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script src="../JS/script.js"></script>
     <script src="../JS/navegacao.js"></script>

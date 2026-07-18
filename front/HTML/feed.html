@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acompanhe e participe das conversas da comunidade MicroMídia.">
     <title>Feed - MicroMídia</title>
     <link rel="stylesheet" href="../CSS/feed.css">
     <link rel="stylesheet" href="../CSS/theme.css">
+    <link rel="stylesheet" href="../CSS/app.css">
 </head>
-<body>
+<body class="app-page page-feed">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
     
     <header>
         <div class="logo">
-            <img src="../assets/Logo.png" alt="MicroMídia">
+            <a href="feed.html" aria-label="Ir para o feed"><img src="../assets/Logo.png" alt="MicroMídia"></a>
         </div>
         <nav class="navigation">
             <a href="feed.html" class="nav-link active"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
             <a href="busca.html" class="nav-link"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
-            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Comunidade" style="width: 16px; height: 16px; vertical-align: middle;"> Comunidade</a>
             <a href="perfil.html" class="nav-link"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
             <a href="formulario.html" class="nav-link"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
             <a href="admin.html" class="nav-link" id="admin-link" style="display: none;"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
@@ -24,14 +27,20 @@
         </nav>
         <div class="user-info">
             <span class="user-name" id="user-name-display">Carregando...</span>
-            <button class="btn-logout" title="Sair">Logout</button>
+            <button class="btn-logout" title="Sair">Sair</button>
         </div>
     </header>
 
     
-    <div class="container">
-        <main class="content" style="margin-left: 0; width: 100%;">
-            <h2>Feed de Postagens</h2>
+    <div class="container app-main-shell">
+        <main class="content" id="main-content">
+            <div class="page-intro">
+                <div>
+                    <span class="page-kicker">Conversa aberta</span>
+                    <h2>Feed da comunidade</h2>
+                    <p>Ideias, dúvidas e aprendizados compartilhados por quem empreende.</p>
+                </div>
+            </div>
             <div id="loading-message">
                 <div class="loading">
                     <div class="spinner"></div>

@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Receba um diagnóstico personalizado de marketing digital para seu negócio.">
     <title>Diagnóstico - MicroMídia</title>
     <link rel="stylesheet" href="../CSS/formulario.css">
     <link rel="stylesheet" href="../CSS/theme.css">
+    <link rel="stylesheet" href="../CSS/app.css">
 </head>
-<body>
+<body class="app-page page-diagnostic">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
     <header>
         <div class="logo">
-            <img src="../assets/Logo.png" alt="MicroMídia">
+            <a href="feed.html" aria-label="Ir para o feed"><img src="../assets/Logo.png" alt="MicroMídia"></a>
         </div>
         <nav class="navigation">
             <a href="feed.html" class="nav-link"><img src="../assets/feed.png" alt="Feed" style="width: 16px; height: 16px; vertical-align: middle;"> Feed</a>
             <a href="busca.html" class="nav-link"><img src="../assets/busca.png" alt="Buscar" style="width: 16px; height: 16px; vertical-align: middle;"> Buscar</a>
-            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Usuários" style="width: 16px; height: 16px; vertical-align: middle;"> Usuários</a>
+            <a href="usuarios.html" class="nav-link"><img src="../assets/usuarios.png" alt="Comunidade" style="width: 16px; height: 16px; vertical-align: middle;"> Comunidade</a>
             <a href="perfil.html" class="nav-link"><img src="../assets/perfil-de-usuario.png" alt="Perfil" style="width: 16px; height: 16px; vertical-align: middle;"> Perfil</a>
             <a href="formulario.html" class="nav-link active"><img src="../assets/diagnostico.png" alt="Diagnóstico" style="width: 16px; height: 16px; vertical-align: middle;"> Diagnóstico</a>
             <a href="admin.html" class="nav-link" id="admin-link" style="display: none;"><img src="../assets/perfil-de-usuario.png" alt="Admin" style="width: 16px; height: 16px; vertical-align: middle;"> Admin</a>
@@ -23,14 +26,25 @@
         </nav>
         <div class="user-info">
             <span class="user-name" id="user-name-display">Carregando...</span>
-            <button class="btn-logout" title="Sair">Logout</button>
+            <button class="btn-logout" title="Sair">Sair</button>
         </div>
     </header>
     
-    <div class="container">
-        <main class="form-container">
-            <h2>Diagnóstico de Marketing Digital</h2>
-            <p>Responda ao questionário abaixo para receber recomendações personalizadas para sua empresa.</p>
+    <div class="container diagnostic-shell">
+        <aside class="diagnostic-aside">
+            <span class="page-kicker">Plano de ação</span>
+            <h1>Transforme respostas em próximos passos.</h1>
+            <p>Em poucos minutos, você recebe recomendações alinhadas ao momento atual do seu negócio.</p>
+            <ol class="diagnostic-steps" aria-label="Etapas do diagnóstico">
+                <li><span>1</span> Contexto do negócio</li>
+                <li><span>2</span> Presença digital</li>
+                <li><span>3</span> Objetivos prioritários</li>
+            </ol>
+        </aside>
+        <main class="form-container" id="main-content">
+            <span class="page-kicker">Diagnóstico personalizado</span>
+            <h2>Conte um pouco sobre sua empresa</h2>
+            <p>Preencha os campos para receber uma orientação prática e personalizada.</p>
 
             <form id="formDiagnostico">
                 <div class="form-group">
@@ -83,7 +97,7 @@
                     <input type="text" id="objetivo-outro" placeholder="Descreva seu objetivo" style="display: none; margin-top: 10px;">
                 </div>
 
-                <button type="submit" class="btn-primary">Receber Diagnóstico</button>
+                <button type="submit" class="btn-primary">Gerar meu diagnóstico</button>
             </form>
         </main>
     </div>
